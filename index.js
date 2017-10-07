@@ -1,4 +1,5 @@
 var express = require('express');
+var players = require('./api/players');
 var app = express();
 
 app.get('/', (req, res) => {
@@ -10,7 +11,7 @@ app.get('/scorepads', (req, res) => {
 });
 
 app.get('/api/players', (req, res) => {
-  res.send('Jan, Krista, Linus, Lennart, Matteo, Marco');
+  res.send(players.join(','));
 });
 
 app.use(express.static('web'));
