@@ -12,5 +12,7 @@ app.get('/scorepads', (req, res) => {
 app.get('/api/players', (req, res) => {
   res.send('Jan, Krista, Linus, Lennart, Matteo, Marco');
 });
- 
+
+app.use(express.static('web'));
+
 app.listen(80);
