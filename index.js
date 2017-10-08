@@ -1,6 +1,7 @@
-var express = require('express');
-var players = require('./api/players');
-var app = express();
+const express = require('express');
+const players = require('./api/players');
+
+const app = express();
 
 app.get('/scorepads', (req, res) => {
   res.send('These are insane score pads!');

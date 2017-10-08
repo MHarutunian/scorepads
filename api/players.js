@@ -1,7 +1,7 @@
-var players = require('./mocks/players');
+const players = require('./mocks/players');
 
 function get() {
-    return players;
+  return players;
 }
 
 exports.get = get;
