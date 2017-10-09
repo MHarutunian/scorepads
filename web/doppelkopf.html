@@ -3,15 +3,28 @@
     <title>
       Scorepads - Doppelkopf
     </title>
+    <link rel="stylesheet" href = "./css/doppelkopf.css"></link>
     <script type="text/javascript" src="./js/doppelkopf.js"></script>
   </head>
   <body>
     <h1>
       Doppelkopf
     </h1>
-    <div>
-      <select id="player">
-      </select>
+    <div class = "mainArea">
+      <p>Wähle die teilnehmenden Spieler aus!</p>
+      <fieldset>
+          <select id="player1">
+            </select>
+            <select id="player2">
+            </select>
+            <select id="player3">
+            </select>
+            <select id="player4">
+            </select>
+      </fieldset>
+      <input type="button" value="Spiel beginnen" onclick="window.location.replace('doppelkopfSchreiben.html')"/>
+      <input type="button" value="Abbrechen" onclick=""/> <!-- TODO Homepage -->
+      <input type="button" value="Spiel laden" onclick=""/> <!-- TODO Ladeseite -->
     </div>
   </body>
 </html>

@@ -1,0 +1,26 @@
+.mainArea {
+  width: 1000px;
+  padding: 10px;
+  border: 1px solid black;
+}
+fieldset {
+  padding: 10px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+.schreibTabelle{
+  border-collapse:collapse;
+	border:1px solid black;
+}
+.schreibTabelle th,td{
+  width: 100px;
+  height: 25px;
+	border:1px solid black;
+	padding:5px;
+}
+.spieler{
+  background-color: yellowgreen;
+}
+.spiel{
+  background-color: beige;
+}
