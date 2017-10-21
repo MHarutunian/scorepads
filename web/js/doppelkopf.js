@@ -7,11 +7,11 @@ function addPlayers(select, players) {
   }
 }
 
-window.onload = function onLoad() {
+window.onload = () => {
   const request = new XMLHttpRequest();
 
   request.open('GET', '/api/players');
-  request.addEventListener('load', function onRequestLoad() {
+  request.addEventListener('load', () => {
     if (request.status >= 200 && request.status < 300) {
       const players = JSON.parse(request.responseText);
       addPlayers(document.getElementById('player'), players);
