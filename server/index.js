@@ -1,14 +1,20 @@
 /* eslint-disable import/no-extraneous-dependencies */
 const webpack = require('webpack');
 const webpackDevMiddleware = require('webpack-dev-middleware');
-const config = require('./config/webpack.config.dev');
+const webpackConfig = require('./config/webpack.config.dev');
 const express = require('express');
 const players = require('./api/players');
+const db = require('./db');
 
-const compiler = webpack(config);
+process.on('uncaughtException', (error) => {
+  console.error(error);
+});
+
+const compiler = webpack(webpackConfig);
 const app = express();
 
 app.get('/scorepads', (req, res) => {
+  db.connect();
   res.send('These are insane score pads!');
 });
 
@@ -21,7 +27,7 @@ app.use('/', express.static('web', {
 }));
 
 app.use(webpackDevMiddleware(compiler, {
-  publicPath: config.output.publicPath
+  publicPath: webpackConfig.output.publicPath
 }));
 
 app.listen(80);
