@@ -26,7 +26,8 @@
     "express": "^4.16.1",
     "install": "^0.10.1",
     "mongodb": "^2.2.31",
-    "npm": "^5.4.2"
+    "npm": "^5.4.2",
+    "webpack-hot-middleware": "^2.20.0"
   },
   "devDependencies": {
     "babel-core": "^6.26.0",

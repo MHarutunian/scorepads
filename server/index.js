@@ -1,7 +1,8 @@
 /* eslint-disable import/no-extraneous-dependencies */
 const webpack = require('webpack');
-const webpackDevMiddleware = require('webpack-dev-middleware');
 const webpackConfig = require('./config/webpack.config.dev');
+const webpackDevMiddleware = require('webpack-dev-middleware');
+const webpackHotMiddleware = require('webpack-hot-middleware');
 const express = require('express');
 const players = require('./api/players');
 
@@ -36,5 +37,7 @@ app.use('/', express.static('web', {
 app.use(webpackDevMiddleware(compiler, {
   publicPath: webpackConfig.output.publicPath
 }));
+
+app.use(webpackHotMiddleware(compiler));
 
 app.listen(80);
