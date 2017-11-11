@@ -10,11 +10,11 @@ function addPlayers(select, players) {
   }
 }
 
-window.onload = function onLoad() {
+window.onload = () => {
   const request = new XMLHttpRequest();
 
   request.open('GET', '/api/players');
-  request.addEventListener('load', function onRequestLoad() {
+  request.addEventListener('load', () => {
     for (let i = 1; i < 5; i += 1) { // 4 Spieler können ausgewählt werden
       if (request.status >= 200 && request.status < 300) {
         const players = JSON.parse(request.responseText);
@@ -27,7 +27,7 @@ window.onload = function onLoad() {
   request.send();
 };
 
-document.addEventListener('DOMContentLoaded', function storeChoice() { // Auswahl des Spielers wird gespeichert
+document.addEventListener('DOMContentLoaded', () => { // Auswahl des Spielers wird gespeichert
   for (let i = 1; i < 5; i += 1) {
     const input = document.getElementById(`player${i}`);
     if (localStorage[`player${i}`]) {
