@@ -3,24 +3,30 @@
   padding: 10px;
   border: 1px solid black;
 }
+
 fieldset {
   padding: 10px;
   margin-top: 10px;
   margin-bottom: 10px;
 }
-.schreibTabelle{
-  border-collapse:collapse;
-	border:1px solid black;
+
+.table {
+  border-collapse: collapse;
+  border: 1px solid black;
 }
-.schreibTabelle th,td{
+
+.table th,
+td {
   width: 100px;
   height: 25px;
-	border:1px solid black;
-	padding:5px;
+  border: 1px solid black;
+  padding: 5px;
 }
-.spieler{
+
+.player {
   background-color: yellowgreen;
 }
-.spiel{
+
+.game {
   background-color: beige;
 }
