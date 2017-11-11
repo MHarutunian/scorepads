@@ -1,12 +1,12 @@
+const path = require('path');
+
 module.exports = {
   entry: {
     doppelkopf: './src/doppelkopf.js'
   },
-  devtool: '#source-map',
   output: {
-    path: '/',
-    publicPath: '/js/',
-    filename: '[name].js'
+    filename: '[name].js',
+    path: path.resolve(__dirname, '../../web/js')
   },
   module: {
     rules: [
