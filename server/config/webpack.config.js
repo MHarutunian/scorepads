@@ -2,7 +2,8 @@ const path = require('path');
 
 module.exports = {
   entry: {
-    doppelkopf: './src/doppelkopf.js'
+    doppelkopf: './src/doppelkopf.js',
+    doppelkopfSchreiben: './src/doppelkopfSchreiben.js'
   },
   output: {
     filename: '[name].js',
