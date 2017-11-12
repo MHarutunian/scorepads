@@ -15,10 +15,6 @@ process.on('uncaughtException', (error) => {
 const compiler = webpack(webpackConfig);
 const app = express();
 
-app.use('/', express.static('web', {
-  index: 'doppelkopf.html'
-}));
-
 app.use(bodyParser.json());
 
 app.use(webpackDevMiddleware(compiler, {
@@ -27,24 +23,10 @@ app.use(webpackDevMiddleware(compiler, {
 
 app.use(webpackHotMiddleware(compiler));
 
-app.get('/scorepads', (req, res) => {
-  res.send('These are insane score pads!');
-});
+app.use('/', express.static('web', {
+  index: 'doppelkopf.html'
+}));
 
-app.get('/api/players', (req, res) => {
-  players.get((result) => {
-    res.send(result);
-  });
-});
-
-app.post('/api/players', (req, res) => {
-  if (!req.body || !req.body.name) {
-    res.sendStatus(400);
-  } else {
-    players.add(req.body.name, (result) => {
-      res.send(result);
-    });
-  }
-});
+app.use('/api/players', players);
 
 app.listen(80);

@@ -3,6 +3,10 @@
  */
 let list;
 /**
+ * The header used to display the current action.
+ */
+let header;
+/**
  * The HTML form used to create/update players.
  */
 let form;
@@ -35,37 +39,88 @@ function sendRequest(method, onResponse, body = null) {
   }
 }
 
+/**
+ * Sets the text displayed in the form header.
+ *
+ * @param {string} text the text to set as the form's header
+ */
+function setHeaderText(text) {
+  if (!header) {
+    header = document.getElementById('form-header');
+  }
+
+  header.textContent = text;
+}
+
+/**
+ * Enables editing a player in order to update it on the server.
+ *
+ * @param {Object} player the player to enable editing for
+ */
 function editPlayer(player) {
   const { id, name } = form.elements;
   id.value = player._id;
   name.value = player.name;
+
+  setHeaderText(`${player.name} bearbeiten`);
 }
 
 /**
- * Adds a player to the list by create HTML elements based on the model.
+ * Creates a HTML list item used to display a player's data.
+ *
+ * @param {Object} player the player to create the list item for
+ * @return {HTMLLIElement} the list element representing the player
+ */
+function createPlayerItem(player) {
+  const item = document.createElement('li');
+  item.id = player._id;
+  item.className = 'player-item';
+  return item;
+}
+
+/**
+ * Adds a player to the list by creating HTML elements based on the model.
  *
  * @param {Object} player the player model used to create the player list item
+ * @param {HTMLLIElement} [existingItem] the item to add the player to. If no
+ *        item exists, a new item will be created instead
+ * @see createPlayerItem
  */
-function addPlayer(player) {
+function addPlayer(player, existingItem = null) {
   if (!list) {
     list = document.getElementById('player-list');
   }
 
-  const item = document.createElement('li');
-  item.id = player._id;
-  item.className = 'player-item';
-  item.appendChild(document.createTextNode(player.name));
-
+  const item = existingItem || createPlayerItem(player);
   const button = document.createElement('button');
   button.type = 'button';
   button.className = 'player-button';
   button.onclick = () => {
     editPlayer(player);
   };
-  button.appendChild(document.createTextNode('bearbeiten'));
+  button.textContent = 'bearbeiten';
 
+  item.appendChild(document.createTextNode(player.name));
   item.appendChild(button);
-  list.appendChild(item);
+
+  if (item.parentNode !== list) {
+    list.appendChild(item);
+  }
+}
+
+/**
+ * Replaces an existing player with a new player object.
+ *
+ * @param {Object} player the player to be replaced
+ */
+function replacePlayer(player) {
+  const item = document.getElementById(player._id);
+
+  while (item && item.lastChild) {
+    item.removeChild(item.lastChild);
+  }
+
+  addPlayer(player, item);
 }
 
 /**
@@ -78,7 +133,9 @@ function addPlayer(player) {
  */
 function initPlayers() {
   sendRequest('GET', (players) => {
-    players.forEach(addPlayer);
+    players.forEach((player) => {
+      addPlayer(player);
+    });
   });
 }
 
@@ -94,12 +151,30 @@ function initPlayers() {
  */
 function sendPlayer(id, name) {
   if (id) {
-    console.log(id, name);
+    sendRequest('PUT', (player) => {
+      replacePlayer(player);
+    }, {
+      _id: id,
+      name
+    });
   } else {
     sendRequest('POST', (player) => {
       addPlayer(player);
     }, { name });
   }
+}
+
+/**
+ * Resets the input form by setting all its values to their defaults.
+ */
+function resetForm() {
+  if (!form) {
+    form = document.getElementById('player-form');
+  }
+
+  form.reset();
+  form.elements.id.value = '';
+  setHeaderText('Spieler hinzufügen');
 }
 
 window.onload = () => {
@@ -108,8 +183,10 @@ window.onload = () => {
     event.preventDefault();
     const { id, name } = form.elements;
     sendPlayer(id.value, name.value);
-    form.reset();
+    resetForm();
   };
+  form.onreset = resetForm;
 
   initPlayers();
+  resetForm();
 };
