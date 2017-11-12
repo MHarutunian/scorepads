@@ -4,6 +4,7 @@ const webpackConfig = require('./config/webpack.config.dev');
 const webpackDevMiddleware = require('webpack-dev-middleware');
 const webpackHotMiddleware = require('webpack-hot-middleware');
 const express = require('express');
+const bodyParser = require('body-parser');
 const players = require('./api/players');
 
 process.on('uncaughtException', (error) => {
@@ -13,6 +14,18 @@ process.on('uncaughtException', (error) => {
 
 const compiler = webpack(webpackConfig);
 const app = express();
+
+app.use('/', express.static('web', {
+  index: 'doppelkopf.html'
+}));
+
+app.use(bodyParser.json());
+
+app.use(webpackDevMiddleware(compiler, {
+  publicPath: webpackConfig.output.publicPath
+}));
+
+app.use(webpackHotMiddleware(compiler));
 
 app.get('/scorepads', (req, res) => {
   res.send('These are insane score pads!');
@@ -24,20 +37,14 @@ app.get('/api/players', (req, res) => {
   });
 });
 
-app.get('/api/players/:name', (req, res) => {
-  players.add(req.params.name, (result) => {
-    res.send(result);
-  });
+app.post('/api/players', (req, res) => {
+  if (!req.body || !req.body.name) {
+    res.sendStatus(400);
+  } else {
+    players.add(req.body.name, (result) => {
+      res.send(result);
+    });
+  }
 });
-
-app.use('/', express.static('web', {
-  index: 'doppelkopf.html'
-}));
-
-app.use(webpackDevMiddleware(compiler, {
-  publicPath: webpackConfig.output.publicPath
-}));
-
-app.use(webpackHotMiddleware(compiler));
 
 app.listen(80);
