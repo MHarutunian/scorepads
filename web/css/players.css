@@ -1,0 +1,8 @@
+.player-item {
+  display: flex;
+  width: 20%;
+}
+
+.player-button {
+  margin-left: auto;
+}

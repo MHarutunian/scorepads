@@ -51,7 +51,7 @@ function add(name, onResult) {
         throw error;
       }
 
-      onResult(result.ops);
+      onResult(result.ops[0]);
     });
   }));
 }
