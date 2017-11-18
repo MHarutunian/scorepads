@@ -4,8 +4,9 @@ const config = require('./webpack.config');
 const entry = {};
 Object.keys(config.entry).forEach((key) => {
   entry[key] = [
-    config.entry[key],
-    'webpack-hot-middleware/client?path=/__webpack_hmr&timeout=5000&reload=true'
+    'event-source-polyfill',
+    'webpack-hot-middleware/client?path=/__webpack_hmr&timeout=5000&reload=true',
+    config.entry[key]
   ];
 });
 
