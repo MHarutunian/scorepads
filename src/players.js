@@ -238,9 +238,9 @@ window.onload = () => {
     const file = form.elements.picture.files[0];
 
     if (file) {
-      reader.addEventListener('load', () => {
+      reader.onload = () => {
         profilePicture.src = reader.result;
-      });
+      };
       reader.readAsDataURL(file);
     }
   };
