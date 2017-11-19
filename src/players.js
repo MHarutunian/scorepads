@@ -1,4 +1,12 @@
 /**
+ * The default picture to use for players without uploaded pictures.
+ */
+const DEFAULT_PICTURE = 'user_default.png';
+/**
+ * The path to the default API endpoint for players.
+ */
+const API_PATH = '/api/players';
+/**
  * The HTML element used to display the list of players.
  */
 let list;
@@ -10,18 +18,23 @@ let header;
  * The HTML form used to create/update players.
  */
 let form;
+/**
+ * The picture being uploaded through the input form.
+ */
+let profilePicture;
 
 /**
  * Sends a request to the API server.
  *
+ * @param {string} path the path to the API endpoint to send the request to
  * @param {string} method the HTTP method to use (e.g. GET/PUT/DELETE)
  * @param {function} onResponse the function to execute with the parsed
  *        JSON response received from the server
  * @param {Object} body the object to send as JSON in the request body
  */
-function sendRequest(method, onResponse, body = null) {
+function sendRequest(path, method, onResponse, body = null) {
   const request = new XMLHttpRequest();
-  request.open(method, '/api/players');
+  request.open(method, path);
   request.addEventListener('load', () => {
     if (request.status >= 200 && request.status < 300) {
       const jsonResponse = JSON.parse(request.responseText);
@@ -53,6 +66,39 @@ function setHeaderText(text) {
 }
 
 /**
+ * Retrieves the path to a picture file based on its file name.
+ *
+ * @param {string} filename the name of the picture file
+ */
+function getPictureSrc(filename) {
+  return `./picture/${filename || DEFAULT_PICTURE}`;
+}
+
+/**
+ * Resets the picture upload back to the default image.
+ */
+function resetPictureUpload() {
+  if (profilePicture) {
+    profilePicture.src = getPictureSrc();
+    form.elements.picture.value = null;
+  }
+}
+
+/**
+ * Resets the input form by setting all its values to their defaults.
+ */
+function resetForm() {
+  if (!form) {
+    form = document.getElementById('player-form');
+  }
+
+  form.reset();
+  form.elements.id.value = ''; // hidden input is not cleared in `reset()`
+  setHeaderText('Spieler hinzufügen');
+  resetPictureUpload();
+}
+
+/**
  * Enables editing a player in order to update it on the server.
  *
  * @param {Object} player the player to enable editing for
@@ -63,6 +109,8 @@ function editPlayer(player) {
   name.value = player.name;
 
   setHeaderText(`${player.name} bearbeiten`);
+  resetPictureUpload();
+  profilePicture.src = getPictureSrc(player.picture);
 }
 
 /**
@@ -74,7 +122,7 @@ function editPlayer(player) {
 function createPlayerItem(player) {
   const item = document.createElement('li');
   item.id = player._id;
-  item.className = 'player-item';
+  item.className = 'player-flexbox player-item';
   return item;
 }
 
@@ -92,16 +140,22 @@ function addPlayer(player, existingItem = null) {
   }
 
   const item = existingItem || createPlayerItem(player);
-  const button = document.createElement('button');
-  button.type = 'button';
-  button.className = 'player-button';
-  button.onclick = () => {
+
+  const picture = document.createElement('img');
+  picture.className = 'player-picture';
+  picture.src = getPictureSrc(player.picture);
+
+  const editButton = document.createElement('button');
+  editButton.type = 'button';
+  editButton.className = 'player-button';
+  editButton.onclick = () => {
     editPlayer(player);
   };
-  button.textContent = 'bearbeiten';
+  editButton.textContent = 'bearbeiten';
 
+  item.appendChild(picture);
   item.appendChild(document.createTextNode(player.name));
-  item.appendChild(button);
+  item.appendChild(editButton);
 
   if (item.parentNode !== list) {
     list.appendChild(item);
@@ -132,7 +186,7 @@ function replacePlayer(player) {
  * @see addPlayer
  */
 function initPlayers() {
-  sendRequest('GET', (players) => {
+  sendRequest(API_PATH, 'GET', (players) => {
     players.forEach((player) => {
       addPlayer(player);
     });
@@ -148,44 +202,51 @@ function initPlayers() {
  *
  * @param {string} id the ID of the player. If this is empty, a new player will be created
  * @param {string} name the name of the player
+ * @param {string} picture the picture as a base64 encoded string
  */
-function sendPlayer(id, name) {
+function sendPlayer(id, name, picture) {
+  const body = {
+    name,
+    picture
+  };
+
   if (id) {
-    sendRequest('PUT', (player) => {
+    sendRequest(`${API_PATH}/${id}`, 'PUT', (player) => {
       replacePlayer(player);
-    }, {
-      _id: id,
-      name
-    });
+      resetForm();
+    }, body);
   } else {
-    sendRequest('POST', (player) => {
+    sendRequest(API_PATH, 'POST', (player) => {
       addPlayer(player);
-    }, { name });
+      resetForm();
+    }, body);
   }
-}
-
-/**
- * Resets the input form by setting all its values to their defaults.
- */
-function resetForm() {
-  if (!form) {
-    form = document.getElementById('player-form');
-  }
-
-  form.reset();
-  form.elements.id.value = '';
-  setHeaderText('Spieler hinzufügen');
 }
 
 window.onload = () => {
   form = document.getElementById('player-form');
+  profilePicture = document.getElementById('player-picture');
+
+  form.onreset = resetForm;
   form.onsubmit = (event) => {
     event.preventDefault();
     const { id, name } = form.elements;
-    sendPlayer(id.value, name.value);
-    resetForm();
+    sendPlayer(id.value, name.value, profilePicture.src);
   };
-  form.onreset = resetForm;
+  form.elements.picture.onchange = () => {
+    const reader = new FileReader();
+    const file = form.elements.picture.files[0];
+
+    if (file) {
+      reader.addEventListener('load', () => {
+        profilePicture.src = reader.result;
+      });
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const resetPictureButton = document.getElementById('picture-reset');
+  resetPictureButton.onclick = resetPictureUpload;
 
   initPlayers();
   resetForm();

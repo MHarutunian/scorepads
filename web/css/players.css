@@ -1,8 +1,23 @@
-.player-item {
+.player-flexbox {
   display: flex;
+  align-items: center;
+}
+
+.player-item {
   width: 20%;
 }
 
 .player-button {
   margin-left: auto;
+}
+
+.player-picture {
+  height: 50px;
+  width: 50px;
+  margin: 5px 10px;
+  border-radius: 25px;
+}
+
+.delete-button {
+  margin-left: 10px;
 }
