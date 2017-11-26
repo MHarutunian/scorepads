@@ -6,6 +6,7 @@ const webpackHotMiddleware = require('webpack-hot-middleware');
 const express = require('express');
 const bodyParser = require('body-parser');
 const players = require('./api/players');
+const scorepads = require('./api/scorepads');
 
 const compiler = webpack(webpackConfig);
 const app = express();
@@ -25,5 +26,6 @@ app.use('/', express.static('web', {
 }));
 
 app.use('/api/players', players);
+app.use('/api/scorepads', scorepads);
 
 app.listen(80);
