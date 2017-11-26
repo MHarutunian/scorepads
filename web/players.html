@@ -15,10 +15,30 @@
     <h3 id="form-header">Spieler hinzufügen</h3>
     <form id="player-form">
       <input name="id" type="hidden" />
-      <label for="name">Name:</label>
-      <input  name="name" type="text" />
-      <button type="submit">Speichern</button>
-      <button type="reset">Abbrechen</button>
+
+      <div>
+        <label for="name">Name:</label>
+        <input name="name" type="text" />
+      </div>
+
+      <div class="player-flexbox">
+        <label for="picture">Profilbild:</label>
+        <img
+          id="player-picture"
+          class="player-picture"
+          src="./picture/user_default.png"
+          alt="Profilbild"
+        />
+        <input name="picture" type="file" />
+        <button id="picture-reset" class="delete-button" type="button">
+          Bild löschen
+        </button>
+      </div>
+
+      <div>
+        <button type="submit">Speichern</button>
+        <button type="reset">Abbrechen</button>
+      </div>
     </form>
   </body>
 </html>

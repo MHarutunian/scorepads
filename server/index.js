@@ -7,15 +7,12 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const players = require('./api/players');
 
-process.on('uncaughtException', (error) => {
-  // FIXME Should be removed in production, might lead to unstable system
-  console.error(error); // eslint-disable-line no-console
-});
-
 const compiler = webpack(webpackConfig);
 const app = express();
 
-app.use(bodyParser.json());
+// we increase the body limit here to allow bigger images in profile picture uploads
+// in the future we probably want to scale the images before uploading them
+app.use(bodyParser.json({ limit: '15mb' }));
 
 app.use(webpackDevMiddleware(compiler, {
   publicPath: webpackConfig.output.publicPath
