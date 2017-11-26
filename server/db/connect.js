@@ -1,4 +1,5 @@
 const { MongoClient } = require('mongodb');
+
 const config = require('../config/config');
 
 const { host, port, path } = config.mongodb;

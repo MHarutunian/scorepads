@@ -26,13 +26,13 @@ let profilePicture;
 /**
  * Sends a request to the API server.
  *
- * @param {string} path the path to the API endpoint to send the request to
  * @param {string} method the HTTP method to use (e.g. GET/PUT/DELETE)
+ * @param {string} path the path to the API endpoint to send the request to
  * @param {function} onResponse the function to execute with the parsed
  *        JSON response received from the server
  * @param {Object} body the object to send as JSON in the request body
  */
-function sendRequest(path, method, onResponse, body = null) {
+function sendRequest(method, path, onResponse, body = null) {
   const request = new XMLHttpRequest();
   request.open(method, path);
   request.addEventListener('load', () => {
@@ -186,7 +186,7 @@ function replacePlayer(player) {
  * @see addPlayer
  */
 function initPlayers() {
-  sendRequest(API_PATH, 'GET', (players) => {
+  sendRequest('GET', API_PATH, (players) => {
     players.forEach((player) => {
       addPlayer(player);
     });
@@ -211,12 +211,12 @@ function sendPlayer(id, name, picture) {
   };
 
   if (id) {
-    sendRequest(`${API_PATH}/${id}`, 'PUT', (player) => {
+    sendRequest('PUT', `${API_PATH}/${id}`, (player) => {
       replacePlayer(player);
       resetForm();
     }, body);
   } else {
-    sendRequest(API_PATH, 'POST', (player) => {
+    sendRequest('POST', API_PATH, (player) => {
       addPlayer(player);
       resetForm();
     }, body);

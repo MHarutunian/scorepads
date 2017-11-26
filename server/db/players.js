@@ -1,24 +1,6 @@
-const { ObjectID } = require('mongodb');
-const connect = require('./connect');
+const Model = require('./Model');
 
-/**
- * Executes the specified callback with the `players` collection from the database.
- *
- * In addition to retrieving the collection and executing the callback, this will properly close
- * the database to prevent dangling connections.
- *
- * @param {function} callback callback that is executed with the `players` collection
- */
-function withCollection(callback) {
-  return (db) => {
-    try {
-      const collection = db.collection('players');
-      callback(collection);
-    } finally {
-      db.close();
-    }
-  };
-}
+const playerModel = new Model('players');
 
 /**
  * Retrieves all players from the database.
@@ -26,15 +8,7 @@ function withCollection(callback) {
  * @param {function} onResult callback that is executed with the result documents from the database
  */
 function get(onResult) {
-  connect(withCollection((collection) => {
-    collection.find({}).toArray((error, players) => {
-      if (error) {
-        throw error;
-      }
-
-      onResult(players);
-    });
-  }));
+  playerModel.find({}, onResult);
 }
 
 /**
@@ -44,17 +18,7 @@ function get(onResult) {
  * @param {function} onResult callback that is executed with the player that was found
  */
 function find(id, onResult) {
-  connect(withCollection((collection) => {
-    collection.findOne({
-      _id: ObjectID(id)
-    }, (error, player) => {
-      if (error) {
-        throw error;
-      }
-
-      onResult(player);
-    });
-  }));
+  playerModel.findOne(id, onResult);
 }
 
 /**
@@ -65,18 +29,10 @@ function find(id, onResult) {
  * @param {function} onResult callback that is executed with the player document that was added
  */
 function add(name, picture, onResult) {
-  connect(withCollection((collection) => {
-    collection.insertOne({
-      name,
-      picture
-    }, (error, result) => {
-      if (error) {
-        throw error;
-      }
-
-      onResult(result.ops[0]);
-    });
-  }));
+  playerModel.insertOne({
+    name,
+    picture
+  }, onResult);
 }
 
 /**
@@ -89,19 +45,7 @@ function add(name, picture, onResult) {
  *        update operation was successful
  */
 function update(id, name, picture, onResult) {
-  connect(withCollection((collection) => {
-    collection.updateOne({
-      _id: ObjectID(id)
-    }, {
-      $set: { name, picture }
-    }, (error, result) => {
-      if (error) {
-        throw error;
-      }
-
-      onResult(result.result.n > 0);
-    });
-  }));
+  playerModel.updateOne(id, { name, picture }, onResult);
 }
 
 exports.get = get;
