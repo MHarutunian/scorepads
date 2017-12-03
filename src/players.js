@@ -1,7 +1,6 @@
-/**
- * The default picture to use for players without uploaded pictures.
- */
-const DEFAULT_PICTURE = 'user_default.png';
+import getPictureSrc from './utils/getPictureSrc';
+import sendRequest from './utils/sendRequest';
+
 /**
  * The path to the default API endpoint for players.
  */
@@ -24,35 +23,6 @@ let form;
 let profilePicture;
 
 /**
- * Sends a request to the API server.
- *
- * @param {string} method the HTTP method to use (e.g. GET/PUT/DELETE)
- * @param {string} path the path to the API endpoint to send the request to
- * @param {function} onResponse the function to execute with the parsed
- *        JSON response received from the server
- * @param {Object} body the object to send as JSON in the request body
- */
-function sendRequest(method, path, onResponse, body = null) {
-  const request = new XMLHttpRequest();
-  request.open(method, path);
-  request.addEventListener('load', () => {
-    if (request.status >= 200 && request.status < 300) {
-      const jsonResponse = JSON.parse(request.responseText);
-      onResponse(jsonResponse);
-    } else {
-      console.warn(request.statusText, request.responseText);
-    }
-  });
-
-  if (body === null) {
-    request.send();
-  } else {
-    request.setRequestHeader('Content-Type', 'application/json');
-    request.send(JSON.stringify(body));
-  }
-}
-
-/**
  * Sets the text displayed in the form header.
  *
  * @param {string} text the text to set as the form's header
@@ -63,15 +33,6 @@ function setHeaderText(text) {
   }
 
   header.textContent = text;
-}
-
-/**
- * Retrieves the path to a picture file based on its file name.
- *
- * @param {string} filename the name of the picture file
- */
-function getPictureSrc(filename) {
-  return `./picture/${filename || DEFAULT_PICTURE}`;
 }
 
 /**

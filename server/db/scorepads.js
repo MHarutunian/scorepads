@@ -1,9 +1,8 @@
 const { ObjectID } = require('mongodb');
-
 const Model = require('./Model');
+const dbPlayers = require('./players');
 
 const scorepadModel = new Model('scorepads');
-const playerModel = new Model('players');
 
 /**
  * Retrieves all scorepads from the database.
@@ -11,7 +10,21 @@ const playerModel = new Model('players');
  * @param {function} onResult callback that is executed with the result documents from the database
  */
 function get(onResult) {
-  scorepadModel.find({}, onResult);
+  scorepadModel.find({}, (scorepads) => {
+    dbPlayers.get((players) => {
+      const playerDict = {};
+      players.forEach((player) => {
+        playerDict[player._id] = player;
+      });
+
+      const result = scorepads.map(scorepad => ({
+        ...scorepad,
+        players: scorepad.players.map(id => playerDict[id]),
+        created_at: scorepad._id.getTimestamp()
+      }));
+      onResult(result);
+    });
+  });
 }
 
 /**
@@ -22,17 +35,15 @@ function get(onResult) {
  * @param {string} id the ID of the scorepad to find
  * @param {function} onResult callback that is executed with the scorepad that was found
  */
-function find(id, onResult) {
+function findById(id, onResult) {
   scorepadModel.findOne(id, (scorepad) => {
-    const { players } = scorepad;
-    const playerIds = players.map(playerId => ObjectID(playerId));
+    const playerIds = scorepad.players.map(playerId => ObjectID(playerId));
 
-    playerModel.find({
-      _id: { $in: playerIds }
-    }, (result) => {
+    dbPlayers.findBy('_id', playerIds, (players) => {
       onResult({
         ...scorepad,
-        players: result
+        players,
+        created_at: scorepad._id.getTimestamp()
       });
     });
   });
@@ -41,15 +52,17 @@ function find(id, onResult) {
 /**
  * Adds a scorepad to the database.
  *
- * @param {Object[]} players the players to list in the scorepad
+ * @param {string} game the game the scorepad shall be created for
+ * @param {Object[]} players the player documents to list in the scorepad
  * @param {function} onResult callback that is executed with the scorepad that was added
  */
-function add(players, onResult) {
+function add(game, players, onResult) {
   scorepadModel.insertOne({
+    game,
     players
   }, onResult);
 }
 
+exports.findById = findById;
 exports.get = get;
-exports.find = find;
 exports.add = add;

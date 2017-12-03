@@ -10,23 +10,26 @@ fieldset {
   margin-bottom: 10px;
 }
 
-.table {
-  border-collapse: collapse;
-  border: 1px solid black;
-}
-
-.table th,
-td {
-  width: 100px;
-  height: 25px;
-  border: 1px solid black;
-  padding: 5px;
-}
-
-.player {
-  background-color: yellowgreen;
+.scorepad {
+  width: 75%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 15px 0;
 }
 
 .game {
-  background-color: beige;
+  font-weight: bold;
+}
+
+.player {
+  display: flex;
+  align-items: center;
+}
+
+.player img {
+  width: 4em;
+  height: 4em;
+  border-radius: 2.5em;
+  margin-right: 1em;
 }
