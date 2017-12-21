@@ -49,6 +49,27 @@ Model.prototype.find = function (query, onResult) {
 };
 
 /**
+ * Finds multiple documents by the specified filter and value.
+ *
+ * The specified filter `value` may be a primitive value or an array/object.
+ *
+ * @param {string} field the document field to filter
+ * @param {*} value the value of the specified field to match documents against
+ * @param {function} onResult the callback to execute with the documents that were found
+ */
+Model.prototype.findBy = function (field, value, onResult) {
+  const query = {};
+
+  if (Array.isArray(value)) {
+    query[field] = { $in: value };
+  } else {
+    query[field] = value;
+  }
+
+  this.find(query, onResult);
+};
+
+/**
  * Finds a single document by its ID.
  *
  * @param {string} id the ID of the document to find

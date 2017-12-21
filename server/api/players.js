@@ -115,7 +115,7 @@ router.put('/:id', (req, res) => {
     const { id } = req.params;
     const { name, picture } = req.body;
 
-    players.find(id, (player) => {
+    players.findById(id, (player) => {
       if (!player) {
         res.sendStatus(404);
       } else {

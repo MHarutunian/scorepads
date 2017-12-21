@@ -8,7 +8,7 @@ router.get('/', (req, res) => {
 });
 
 router.get('/:id', (req, res) => {
-  scorepads.find(req.params.id, (scorepad) => {
+  scorepads.findById(req.params.id, (scorepad) => {
     if (scorepad) {
       res.send(scorepad);
     } else {
@@ -19,11 +19,11 @@ router.get('/:id', (req, res) => {
 
 
 router.post('/', (req, res) => {
-  if (!req.body || !req.body.players) {
+  if (!req.body || !req.body.game || !req.body.players) {
     res.sendStatus(400);
   } else {
-    const { players } = req.body;
-    scorepads.add(players, (result) => {
+    const { game, players } = req.body;
+    scorepads.add(game, players, (result) => {
       res.send(result);
     });
   }
