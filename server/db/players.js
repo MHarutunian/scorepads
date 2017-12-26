@@ -73,9 +73,22 @@ function update(id, name, picture, onResult) {
   playerModel.updateOne(id, { name, picture }, onResult);
 }
 
+/**
+ * Deletes a player document.
+ *
+ * @param {string} id the id of the player to delete
+ * @param {function} onResult callback that is executed with a boolean to indicate whether the
+ *        delete operation was successful
+ * @see Model#deleteOne
+ */
+function deleteById(id, onResult) {
+  playerModel.deleteOne(id, onResult);
+}
+
 exports.find = find;
 exports.findBy = findBy;
 exports.findById = findById;
 exports.get = get;
 exports.add = add;
 exports.update = update;
+exports.deleteById = deleteById;

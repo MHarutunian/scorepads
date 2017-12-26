@@ -130,4 +130,24 @@ Model.prototype.updateOne = function (id, update, onResult) {
   });
 };
 
+/**
+ * Deletes a single document by its ID.
+ *
+ * @param {string} id the ID of the document to delete
+ * @param {function} onResult callback executed with a boolean (true for success, false otherwise)
+ */
+Model.prototype.deleteOne = function (id, onResult) {
+  this.withCollection((collection) => {
+    collection.deleteOne({
+      _id: ObjectID(id)
+    }, (error, result) => {
+      if (error) {
+        throw error;
+      }
+
+      onResult(result.deletedCount > 0);
+    });
+  });
+};
+
 module.exports = Model;

@@ -2,6 +2,11 @@ import sendRequest from './utils/sendRequest';
 import getPictureSrc from './utils/getPictureSrc';
 
 /**
+ * The HTML element used to display the list of scorepads.
+ */
+let scorepadList;
+
+/**
  * Adds a list of players as select options to an HTML select element.
  *
  * @param {HTMLSelectElement} select the select element
@@ -64,10 +69,11 @@ function createPlayerElement(player) {
 
   const picture = document.createElement('img');
   picture.className = 'picture';
-  picture.src = getPictureSrc(player.picture);
+  picture.src = getPictureSrc(player && player.picture);
   playerElement.appendChild(picture);
 
-  playerElement.appendChild(document.createTextNode(player.name));
+  const name = player ? player.name : 'Undefined';
+  playerElement.appendChild(document.createTextNode(name));
   return playerElement;
 }
 
@@ -95,11 +101,22 @@ function createScorepadElement(scorepad) {
   listItem.appendChild(document.createTextNode(formattedDate));
 
   const loadButton = document.createElement('button');
+  loadButton.type = 'button';
   loadButton.onclick = () => {
     redirectToScorepad(scorepad);
   };
   loadButton.appendChild(document.createTextNode('Spiel laden'));
   listItem.appendChild(loadButton);
+
+  const deleteButton = document.createElement('button');
+  deleteButton.type = 'button';
+  deleteButton.onclick = () => {
+    sendRequest('DELETE', `/api/scorepads/${scorepad._id}`, () => {
+      scorepadList.removeChild(listItem);
+    });
+  };
+  deleteButton.textContent = 'Spiel löschen';
+  listItem.appendChild(deleteButton);
 
   return listItem;
 }
@@ -116,7 +133,7 @@ window.onload = () => {
     beginButton.onclick = () => initScorepad(players);
   });
 
-  const scorepadList = document.getElementById('scorepad-list');
+  scorepadList = document.getElementById('scorepad-list');
   sendRequest('GET', '/api/scorepads', (scorepads) => {
     scorepads.forEach((scorepad) => {
       scorepadList.appendChild(createScorepadElement(scorepad));
