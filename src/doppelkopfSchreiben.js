@@ -1,4 +1,26 @@
+import noUiSlider from 'nouislider';
+import 'nouislider/distribute/nouislider.min.css';
+
 import sendRequest from './utils/sendRequest';
+
+const sliderOptions = {
+  start: 120,
+  step: 30,
+  connect: 'lower',
+  tooltips: true,
+  range: {
+    min: 0,
+    max: 120
+  },
+  format: {
+    to: value => value,
+    from: value => value
+  },
+  pips: {
+    mode: 'steps',
+    density: 30
+  }
+};
 
 /**
  * Retrieves a single query parameter by its key.
@@ -34,4 +56,9 @@ window.onload = () => {
       document.getElementById(`playerSel${i}`).appendChild(playerText);
     }
   });
+
+  const scoreSlider = document.getElementById('score-slider');
+  const biddingSlider = document.getElementById('bidding-slider');
+  noUiSlider.create(scoreSlider, sliderOptions);
+  noUiSlider.create(biddingSlider, sliderOptions);
 };
