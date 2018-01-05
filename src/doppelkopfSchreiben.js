@@ -1,4 +1,5 @@
 import sendRequest from './utils/sendRequest';
+import addPlayers from './utils/addPlayers';
 
 /**
  * Retrieves a single query parameter by its key.
@@ -25,6 +26,7 @@ function getParam(key) {
   return query.substring(startIndex, endIndex);
 }
 
+
 window.onload = () => {
   const scorepadId = getParam('scorepad');
   sendRequest('GET', `/api/scorepads/${scorepadId}`, (scorepad) => {
@@ -32,6 +34,11 @@ window.onload = () => {
     for (let i = 1; i < 5; i += 1) {
       const playerText = document.createTextNode(players[i - 1].name);
       document.getElementById(`playerSel${i}`).appendChild(playerText);
+    }
+    for (let i = 1; i < 3; i += 1) {
+      const winnerSelect = document.getElementById(`winner${i}`);
+      addPlayers(winnerSelect, players);
+      winnerSelect.selectedIndex = -1;
     }
   });
 };
