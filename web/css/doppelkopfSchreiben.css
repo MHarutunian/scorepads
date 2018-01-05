@@ -18,3 +18,22 @@ td {
 .game {
   background-color: beige;
 }
+
+.write-blog {
+  padding: 15px;
+}
+
+.write-div {
+  display: flex;
+  width: 20%;
+  padding: 5px;
+}
+
+.write-input {
+  flex: 1;
+  margin-right: 5px;
+}
+
+#special-points {
+  margin-left: 5px;
+}
