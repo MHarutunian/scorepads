@@ -21,6 +21,48 @@
       <th class="game">Spieler 2</th>
     </tr>
     </table>
+    <form class="write-blog" id="write-blog" method="post">
+      <div class="write-div">
+        <select id="winner1" class="write-input">
+        </select>
+
+        <select id="winner2" class="write-input">
+        </select>
+      </div>
+
+      <div class="write-div">
+        <div class="write-input">
+          <input type="radio" name="team" id="re" value="re" checked/>
+          <label for="re">Re-Partei</label>
+        </div>
+
+        <div class="write-input">
+          <input type="radio" name="team" id="kontra" value="kontra"/>
+          <label for="kontra">Kontra-Partei</label>
+        </div>
+      </div>
+
+      <div class="write-div">
+        <div class="write-input">
+          <input type="checkbox" name="bid" id="re-bid" value="re-bid"/>
+          <label for="re-bid">Re angesagt</label>
+        </div>
+
+        <div class="write-input">
+          <input type="checkbox" name="bid" id="kontra-bid" value="kontra-bid"/>
+          <label for="kontra-bid">Kontra angesagt</label>
+        </div>
+      </div>
+
+      <div class="write-div">
+        <label for="special-points">Sonderpunkte</label>
+        <select id="special-points"></select>
+      </div>
+
+      <div class="write-div">
+        <input type="submit" value="Speichern"/>
+      </div>
+    </form>
   </div>
   </body>
 </html>
