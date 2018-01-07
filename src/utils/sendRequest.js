@@ -3,19 +3,24 @@
  *
  * @param {string} method the HTTP method to use (e.g. GET/PUT/DELETE)
  * @param {string} path the path to the API endpoint to send the request to
- * @param {function} onResponse the function to execute with the parsed
+ * @param {function} [onResponse] the function to execute with the parsed
  *        JSON response received from the server
  * @param {Object} [body] the object to send as JSON in the request body
  */
-export default function sendRequest(method, path, onResponse, body = null) {
+export default function sendRequest(method, path, onResponse = null, body = null) {
   const request = new XMLHttpRequest();
   request.open(method, path);
   request.addEventListener('load', () => {
-    if (request.status >= 200 && request.status < 300) {
-      const jsonResponse = JSON.parse(request.responseText);
-      onResponse(jsonResponse);
-    } else {
-      console.warn(request.statusText, request.responseText);
+    if (onResponse !== null) {
+      if (request.status >= 200 && request.status < 300) {
+        let jsonResponse;
+        if (request.responseText) {
+          jsonResponse = JSON.parse(request.responseText);
+        }
+        onResponse(jsonResponse);
+      } else {
+        console.warn(request.statusText, request.responseText);
+      }
     }
   });
 

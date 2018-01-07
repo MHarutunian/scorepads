@@ -2,12 +2,13 @@ import noUiSlider from 'nouislider';
 import 'nouislider/distribute/nouislider.min.css';
 
 import sendRequest from './utils/sendRequest';
+import addPlayers from './utils/addPlayers';
 
 const sliderOptions = {
   start: 120,
   step: 30,
   connect: 'lower',
-  tooltips: true,
+  tooltips: false,
   range: {
     min: 0,
     max: 120
@@ -18,6 +19,7 @@ const sliderOptions = {
   },
   pips: {
     mode: 'steps',
+    filter: () => 1,
     density: 30
   }
 };
@@ -47,6 +49,7 @@ function getParam(key) {
   return query.substring(startIndex, endIndex);
 }
 
+
 window.onload = () => {
   const scorepadId = getParam('scorepad');
   sendRequest('GET', `/api/scorepads/${scorepadId}`, (scorepad) => {
@@ -55,10 +58,15 @@ window.onload = () => {
       const playerText = document.createTextNode(players[i - 1].name);
       document.getElementById(`playerSel${i}`).appendChild(playerText);
     }
+    for (let i = 1; i < 3; i += 1) {
+      const winnerSelect = document.getElementById(`winner${i}`);
+      addPlayers(winnerSelect, players);
+      winnerSelect.selectedIndex = -1;
+    }
   });
 
-  const scoreSlider = document.getElementById('score-slider');
-  const biddingSlider = document.getElementById('bidding-slider');
+  const scoreSlider = document.getElementById('slider-score');
+  const biddingSlider = document.getElementById('slider-bidding');
   noUiSlider.create(scoreSlider, sliderOptions);
   noUiSlider.create(biddingSlider, sliderOptions);
 };

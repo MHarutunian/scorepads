@@ -21,15 +21,67 @@
       <th class="game">Spieler 2</th>
     </tr>
     </table>
-    <form>
-      <div class="slider-wrapper">
-        <label for="score-slider">Keine:</label>
-        <div id="score-slider" class="slider"></div>
+    <form class="write-blog" id="write-blog" method="post">
+      <div class="write-div">
+        <select id="winner1" class="write-input">
+        </select>
+
+        <select id="winner2" class="write-input">
+        </select>
       </div>
 
-      <div class="slider-wrapper">
-        <label for="score-slider">Angesagt:</label>
-        <div id="bidding-slider" class="slider"></div>
+      <div class="write-div">
+        <div class="write-input">
+          <input type="radio" name="team" id="re" value="re" checked/>
+          <label for="re">Re-Partei</label>
+        </div>
+
+        <div class="write-input">
+          <input type="radio" name="team" id="kontra" value="kontra"/>
+          <label for="kontra">Kontra-Partei</label>
+        </div>
+      </div>
+
+      <div class="write-div">
+        <div class="write-input">
+          <input type="checkbox" id="re-bid" value="reBid"/>
+          <label for="reBid">Re angesagt</label>
+        </div>
+
+        <div class="write-input">
+          <input type="checkbox" id="kontra-bid" value="kontra-bid"/>
+          <label for="kontra-bid">Kontra angesagt</label>
+        </div>
+      </div>
+
+      <div class="write-score">
+        <label for="slider-score">Keine:</label>
+        <div id="slider-score" class="write-slider"></div>
+      </div>
+
+      <div class="write-score">
+        <label for="slider-bidding">Angesagt:</label>
+        <div id="slider-bidding" class="write-slider"></div>
+      </div>
+
+      <div class="write-div">
+        <label for="special-points">Sonderpunkte</label>
+        <select id="special-points">
+          <option value="0">0</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+          <option value="7">7</option>
+          <option value="8">8</option>
+          <option value="9">9</option>
+        </select>
+      </div>
+
+      <div class="write-div">
+        <input type="submit" value="Speichern"/>
       </div>
     </form>
   </div>

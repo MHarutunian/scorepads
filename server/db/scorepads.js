@@ -63,6 +63,17 @@ function add(game, players, onResult) {
   }, onResult);
 }
 
+/**
+ * Deletes a scorepad from the database.
+ *
+ * @param {string} id the scorepad which should be deleted
+ * @param {function} onResult callback that is executed when the scorepad was deleted
+ */
+function deleteById(id, onResult) {
+  scorepadModel.deleteOne(id, onResult);
+}
+
 exports.findById = findById;
 exports.get = get;
 exports.add = add;
+exports.deleteById = deleteById;

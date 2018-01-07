@@ -19,21 +19,41 @@ td {
   background-color: beige;
 }
 
-form {
-  width: 50%;
+.write-blog {
+  width: 25%;
+  padding: 15px;
 }
 
-.slider-wrapper {
+.write-div {
   display: flex;
-  margin: 60px 20px;
+  align-items: center;
+  padding: 5px;
 }
 
-.slider {
+.write-input {
+  flex: 1;
+  margin-right: 5px;
+}
+
+#special-points {
+  margin-left: 5px;
+}
+
+.write-score {
+  display: flex;
+  margin-bottom: 50px;
+}
+
+.write-score label {
+  width: 80px;
+  text-align: right;
+}
+
+.write-slider {
   flex: 1;
   margin-left: 20px;
 }
 
-.slider-wrapper label {
-  width: 150px;
-  text-align: right;
+.noUi-value {
+  top: 15px;
 }

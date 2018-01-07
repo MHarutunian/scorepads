@@ -1,20 +1,12 @@
 import sendRequest from './utils/sendRequest';
 import getPictureSrc from './utils/getPictureSrc';
+import addPlayers from './utils/addPlayers';
 
 /**
- * Adds a list of players as select options to an HTML select element.
- *
- * @param {HTMLSelectElement} select the select element
- * @param {Object[]} players the players to add as select options
+ * The HTML element used to display the list of scorepads.
  */
-function addPlayers(select, players) {
-  for (let i = 0; i < players.length; i += 1) {
-    const option = document.createElement('option');
-    const player = players[i];
-    option.appendChild(document.createTextNode(player.name));
-    select.appendChild(option);
-  }
-}
+let scorepadList;
+
 
 /**
  * Redirects the user to the specified scorepad.
@@ -64,10 +56,11 @@ function createPlayerElement(player) {
 
   const picture = document.createElement('img');
   picture.className = 'picture';
-  picture.src = getPictureSrc(player.picture);
+  picture.src = getPictureSrc(player && player.picture);
   playerElement.appendChild(picture);
 
-  playerElement.appendChild(document.createTextNode(player.name));
+  const name = player ? player.name : 'Undefined';
+  playerElement.appendChild(document.createTextNode(name));
   return playerElement;
 }
 
@@ -95,11 +88,22 @@ function createScorepadElement(scorepad) {
   listItem.appendChild(document.createTextNode(formattedDate));
 
   const loadButton = document.createElement('button');
+  loadButton.type = 'button';
   loadButton.onclick = () => {
     redirectToScorepad(scorepad);
   };
   loadButton.appendChild(document.createTextNode('Spiel laden'));
   listItem.appendChild(loadButton);
+
+  const deleteButton = document.createElement('button');
+  deleteButton.type = 'button';
+  deleteButton.onclick = () => {
+    sendRequest('DELETE', `/api/scorepads/${scorepad._id}`, () => {
+      scorepadList.removeChild(listItem);
+    });
+  };
+  deleteButton.textContent = 'Spiel löschen';
+  listItem.appendChild(deleteButton);
 
   return listItem;
 }
@@ -116,7 +120,7 @@ window.onload = () => {
     beginButton.onclick = () => initScorepad(players);
   });
 
-  const scorepadList = document.getElementById('scorepad-list');
+  scorepadList = document.getElementById('scorepad-list');
   sendRequest('GET', '/api/scorepads', (scorepads) => {
     scorepads.forEach((scorepad) => {
       scorepadList.appendChild(createScorepadElement(scorepad));

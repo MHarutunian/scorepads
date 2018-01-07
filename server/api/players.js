@@ -136,4 +136,14 @@ router.put('/:id', (req, res) => {
   }
 });
 
+router.delete('/:id', (req, res) => {
+  players.deleteById(req.params.id, (isDeleted) => {
+    if (isDeleted) {
+      res.send('');
+    } else {
+      res.sendStatus(404);
+    }
+  });
+});
+
 module.exports = router;

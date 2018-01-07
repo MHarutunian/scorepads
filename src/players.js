@@ -114,9 +114,20 @@ function addPlayer(player, existingItem = null) {
   };
   editButton.textContent = 'bearbeiten';
 
+  const deleteButton = document.createElement('button');
+  deleteButton.type = 'button';
+  deleteButton.className = 'player-button';
+  deleteButton.onclick = () => {
+    sendRequest('DELETE', `${API_PATH}/${player._id}`, () => {
+      list.removeChild(item);
+    });
+  };
+  deleteButton.textContent = 'löschen';
+
   item.appendChild(picture);
   item.appendChild(document.createTextNode(player.name));
   item.appendChild(editButton);
+  item.appendChild(deleteButton);
 
   if (item.parentNode !== list) {
     list.appendChild(item);
