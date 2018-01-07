@@ -63,6 +63,13 @@ window.onload = () => {
       addPlayers(winnerSelect, players);
       winnerSelect.selectedIndex = -1;
     }
+    for (let i = 0; i < 10; i += 1) {
+      const specialPoints = document.getElementById('special-points');
+      const opt = document.createElement('option');
+      opt.value = i;
+      opt.innerHTML = i;
+      specialPoints.appendChild(opt);
+    }
   });
 
   const scoreSlider = document.getElementById('slider-score');
