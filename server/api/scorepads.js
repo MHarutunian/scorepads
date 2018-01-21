@@ -39,4 +39,10 @@ router.delete('/:id', (req, res) => {
   });
 });
 
+router.post('/:id/matches', (req, res) => {
+  scorepads.addMatch(req.params.id, req.body, (result) => {
+    res.send(result);
+  });
+});
+
 module.exports = router;

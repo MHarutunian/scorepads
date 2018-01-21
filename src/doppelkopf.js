@@ -19,23 +19,21 @@ function redirectToScorepad(scorepad) {
 
 /**
  * Creates a scorepad with the specified selected players and redirects the user to it.
- *
- * @param {Object[]} players the players fetched from the API. Used to create the scorepad
  */
-function initScorepad(players) {
+function initScorepad() {
   const playerIds = [];
 
   for (let i = 1; i < 5; i += 1) {
     const playerSelect = document.getElementById(`player${i}`);
-    const { selectedIndex } = playerSelect;
+    const { value } = playerSelect;
 
-    if (selectedIndex < 0 || !players[selectedIndex]) {
+    if (!value) {
       // Invalid player selection - TODO: show error message?
       console.error('Selected player does not exist!');
       return;
     }
 
-    playerIds.push(players[selectedIndex]._id);
+    playerIds.push(value);
   }
 
   sendRequest('POST', '/api/scorepads', redirectToScorepad, {
@@ -117,7 +115,7 @@ window.onload = () => {
     }
 
     const beginButton = document.getElementById('begin');
-    beginButton.onclick = () => initScorepad(players);
+    beginButton.onclick = initScorepad;
   });
 
   scorepadList = document.getElementById('scorepad-list');

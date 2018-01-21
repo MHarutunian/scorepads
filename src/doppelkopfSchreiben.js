@@ -28,6 +28,11 @@ const sliderOptions = {
 };
 
 /**
+ * ID of the scorepad that is being edited.
+ */
+let scorepadId;
+
+/**
  * Retrieves a single query parameter by its key.
  *
  * @param {string} key the key of the query parameter to get
@@ -53,31 +58,78 @@ function getParam(key) {
 }
 
 /**
- * Initializes the range sliders used to set the score and bidding.
+ * Initializes the range sliders used to set the points and bidding.
  */
 function initSliders() {
-  const scoreSlider = document.getElementById('slider-score');
+  const pointsSlider = document.getElementById('slider-points');
   const biddingSlider = document.getElementById('slider-bidding');
-  noUiSlider.create(scoreSlider, sliderOptions);
+  noUiSlider.create(pointsSlider, sliderOptions);
   noUiSlider.create(biddingSlider, sliderOptions);
 
-  // ensure that enemy score cannot be higher than bidding
+  // ensure that enemy points cannot be higher than bidding
   // otherwise the match would be lost
   biddingSlider.noUiSlider.on('slide', ([value]) => {
-    if (value < scoreSlider.noUiSlider.get()) {
-      scoreSlider.noUiSlider.set(value);
+    if (value < pointsSlider.noUiSlider.get()) {
+      pointsSlider.noUiSlider.set(value);
     }
   });
 
-  scoreSlider.noUiSlider.on('slide', ([value]) => {
+  pointsSlider.noUiSlider.on('slide', ([value]) => {
     if (value > biddingSlider.noUiSlider.get()) {
       biddingSlider.noUiSlider.set(value);
     }
   });
 }
 
+/**
+ * Adds a match to the HTML scorepad table.
+ *
+ * @param {Object} match the match to add to the HTML scorepad
+ */
+function addMatch(match) {
+  // TODO
+  console.log(match);
+}
+
+/**
+ * Saves a match to this scorepad using the values entered by the user.
+ *
+ * @param {Event} event the form submit event that triggered the save
+ */
+function saveMatch(event) {
+  event.preventDefault();
+
+  const pointsSlider = document.getElementById('slider-points');
+  const biddingSlider = document.getElementById('slider-bidding');
+  const {
+    winner1,
+    winner2,
+    team,
+    bid,
+    'special-points': specialPoints
+  } = event.target.elements;
+
+  const bids = Array.from(bid).filter(checkbox => checkbox.checked);
+
+  const match = {
+    winners: [winner1.value, winner2.value],
+    team: team.value,
+    bids: bids.map(checkbox => checkbox.value),
+    points: pointsSlider.noUiSlider.get(),
+    bidding: biddingSlider.noUiSlider.get(),
+    specialPoints: parseInt(specialPoints.value, 10)
+  };
+
+  sendRequest('POST', `/api/scorepads/${scorepadId}/matches`, (update) => {
+    addMatch({
+      ...match,
+      ...update
+    });
+  }, match);
+}
+
 window.onload = () => {
-  const scorepadId = getParam('scorepad');
+  scorepadId = getParam('scorepad');
   sendRequest('GET', `/api/scorepads/${scorepadId}`, (scorepad) => {
     const { players } = scorepad;
     for (let i = 1; i < 5; i += 1) {
@@ -100,4 +152,7 @@ window.onload = () => {
     opt.textContent = i;
     specialPoints.appendChild(opt);
   }
+
+  const form = document.getElementById('write-blog');
+  form.onsubmit = saveMatch;
 };
