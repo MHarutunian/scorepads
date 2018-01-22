@@ -8,7 +8,8 @@ function addPlayers(select, players) {
   for (let i = 0; i < players.length; i += 1) {
     const option = document.createElement('option');
     const player = players[i];
-    option.appendChild(document.createTextNode(player.name));
+    option.value = player._id;
+    option.textContent = player.name;
     select.appendChild(option);
   }
 }

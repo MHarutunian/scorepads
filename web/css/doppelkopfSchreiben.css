@@ -39,12 +39,12 @@ td {
   margin-left: 5px;
 }
 
-.write-score {
+.write-points {
   display: flex;
-  margin-bottom: 50px;
+  margin-bottom: 75px;
 }
 
-.write-score label {
+.write-points label {
   width: 80px;
   text-align: right;
 }
