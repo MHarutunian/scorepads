@@ -20,12 +20,13 @@ td {
 }
 
 .write-blog {
+  width: 25%;
   padding: 15px;
 }
 
 .write-div {
   display: flex;
-  width: 20%;
+  align-items: center;
   padding: 5px;
 }
 
@@ -36,4 +37,23 @@ td {
 
 #special-points {
   margin-left: 5px;
+}
+
+.write-score {
+  display: flex;
+  margin-bottom: 50px;
+}
+
+.write-score label {
+  width: 80px;
+  text-align: right;
+}
+
+.write-slider {
+  flex: 1;
+  margin-left: 20px;
+}
+
+.noUi-value {
+  top: 15px;
 }

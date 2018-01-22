@@ -1,5 +1,31 @@
+import noUiSlider from 'nouislider';
+import 'nouislider/distribute/nouislider.min.css';
+
 import sendRequest from './utils/sendRequest';
 import addPlayers from './utils/addPlayers';
+
+/**
+ * Options used for range sliders that set the score and bidding values.
+ */
+const sliderOptions = {
+  start: 120,
+  step: 30,
+  connect: 'lower',
+  tooltips: false,
+  range: {
+    min: 0,
+    max: 120
+  },
+  format: {
+    to: value => value,
+    from: value => value
+  },
+  pips: {
+    mode: 'steps',
+    filter: () => 1,
+    density: 30
+  }
+};
 
 /**
  * Retrieves a single query parameter by its key.
@@ -26,6 +52,29 @@ function getParam(key) {
   return query.substring(startIndex, endIndex);
 }
 
+/**
+ * Initializes the range sliders used to set the score and bidding.
+ */
+function initSliders() {
+  const scoreSlider = document.getElementById('slider-score');
+  const biddingSlider = document.getElementById('slider-bidding');
+  noUiSlider.create(scoreSlider, sliderOptions);
+  noUiSlider.create(biddingSlider, sliderOptions);
+
+  // ensure that enemy score cannot be higher than bidding
+  // otherwise the match would be lost
+  biddingSlider.noUiSlider.on('slide', ([value]) => {
+    if (value < scoreSlider.noUiSlider.get()) {
+      scoreSlider.noUiSlider.set(value);
+    }
+  });
+
+  scoreSlider.noUiSlider.on('slide', ([value]) => {
+    if (value > biddingSlider.noUiSlider.get()) {
+      biddingSlider.noUiSlider.set(value);
+    }
+  });
+}
 
 window.onload = () => {
   const scorepadId = getParam('scorepad');
@@ -40,12 +89,15 @@ window.onload = () => {
       addPlayers(winnerSelect, players);
       winnerSelect.selectedIndex = -1;
     }
-    for (let i = 0; i < 10; i += 1) {
-      const specialPoints = document.getElementById('special-points');
-      const opt = document.createElement('option');
-      opt.value = i;
-      opt.innerHTML = i;
-      specialPoints.appendChild(opt);
-    }
   });
+
+  initSliders();
+
+  for (let i = 0; i < 10; i += 1) {
+    const specialPoints = document.getElementById('special-points');
+    const opt = document.createElement('option');
+    opt.value = i;
+    opt.textContent = i;
+    specialPoints.appendChild(opt);
+  }
 };
