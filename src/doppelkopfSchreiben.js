@@ -97,9 +97,11 @@ function addMatch(match) {
   const row = table.insertRow();
   for (let i = 0; i < 4; i += 1) {
     const playerCell = row.insertCell();
+    const player = players[i];
     // eslint-disable-next-line no-loop-func
-    const isWinner = match.winners.some(winnerId => winnerId === players[i]._id);
-    playerCell.textContent = isWinner ? match.score : '0';
+    const isWinner = match.winners.some(winnerId => winnerId === player._id);
+    player.score = isWinner ? match.score + player.score : player.score;
+    playerCell.textContent = player.score;
   }
   const scoreCell = row.insertCell();
   scoreCell.textContent = match.score;
@@ -153,7 +155,9 @@ window.onload = () => {
   sendRequest('GET', `/api/scorepads/${scorepadId}`, (scorepad) => {
     players = scorepad.players; // eslint-disable-line prefer-destructuring
     for (let i = 1; i < 5; i += 1) {
-      const playerText = document.createTextNode(players[i - 1].name);
+      const player = players[i - 1];
+      player.score = 0;
+      const playerText = document.createTextNode(player.name);
       document.getElementById(`playerSel${i}`).appendChild(playerText);
     }
     for (let i = 1; i < 3; i += 1) {
