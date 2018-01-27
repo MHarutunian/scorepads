@@ -171,6 +171,23 @@ function addMatch(match) {
 }
 
 /**
+ * Creates and returns an HTML element used to display the current dealer.
+ *
+ * @return HTMLSpanElement the element displaying the current dealer
+ */
+function createDealerSpan() {
+  let dealerIndex;
+
+  if (matchIndex > 0) {
+    dealerIndex = (matchIndex - 1) % players.length;
+  } else {
+    dealerIndex = players.length - 1;
+  }
+
+  return createPlayerSpan(players[dealerIndex]);
+}
+
+/**
  * Saves a match to this scorepad using the values entered by the user.
  */
 function saveMatch() {
@@ -200,8 +217,7 @@ function saveMatch() {
       ...match,
       ...update
     });
-    const dealerIndex = (matchIndex) % players.length;
-    dealer.replaceChild(createPlayerSpan(players[dealerIndex]), dealer.firstChild);
+    dealer.replaceChild(createDealerSpan(), dealer.firstChild);
 
     form.reset();
     saveButton.disabled = true;
@@ -267,12 +283,10 @@ window.onload = () => {
     });
 
     initWinnerSelects();
+    scorepad.matches.forEach(addMatch);
 
     dealer = document.getElementById('dealer');
-    const dealerIndex = (matchIndex) % players.length;
-    dealer.appendChild(createPlayerSpan(players[dealerIndex]));
-
-    scorepad.matches.forEach(addMatch);
+    dealer.appendChild(createDealerSpan());
   });
 
   initSliders();
