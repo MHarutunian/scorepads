@@ -59,6 +59,16 @@ let pointsSlider;
 let biddingSlider;
 
 /**
+ * Dealer of current game.
+ */
+let dealer;
+
+/**
+ * Count of matches played.
+ */
+let matchIndex;
+
+/**
  * Retrieves a single query parameter by its key.
  *
  * @param {string} key the key of the query parameter to get
@@ -187,9 +197,11 @@ function saveMatch() {
       ...update
     });
 
+    matchIndex += 1;
+    const dealerIndex = (matchIndex) % players.length;
+    dealer.replaceChild(createPlayerSpan(players[dealerIndex]), dealer.firstChild);
 
     form.reset();
-
     saveButton.disabled = true;
     specialPoints.selectedIndex = SPECIAL_MAX;
     pointsSlider.noUiSlider.set(sliderOptions.start);
@@ -256,8 +268,8 @@ window.onload = () => {
 
     scorepad.matches.forEach(addMatch);
 
-    const dealer = document.getElementById('dealer');
-    const matchIndex = scorepad.matches.length > 0 ? scorepad.matches.length - 1 : players.length - 1;
+    dealer = document.getElementById('dealer');
+    matchIndex = scorepad.matches.length > 0 ? scorepad.matches.length - 1 : players.length - 1;
     const dealerIndex = (matchIndex) % players.length;
     dealer.appendChild(createPlayerSpan(players[dealerIndex]));
   });
