@@ -29,6 +29,11 @@ const sliderOptions = {
 };
 
 /**
+ * Maximum number of special points that can be selected (positive or negative).
+ */
+const SPECIAL_MAX = 5;
+
+/**
  * ID of the scorepad that is being edited.
  */
 let scorepadId;
@@ -37,6 +42,21 @@ let scorepadId;
  * List of players of scorepad.
  */
 let players;
+
+/**
+ * The HTML form used to enter and save match data.
+ */
+let form;
+
+/**
+ * Slider used to select the points when saving a match.
+ */
+let pointsSlider;
+
+/**
+ * Slider used to select the bidding when saving a match.
+ */
+let biddingSlider;
 
 /**
  * Retrieves a single query parameter by its key.
@@ -67,8 +87,6 @@ function getParam(key) {
  * Initializes the range sliders used to set the points and bidding.
  */
 function initSliders() {
-  const pointsSlider = document.getElementById('slider-points');
-  const biddingSlider = document.getElementById('slider-bidding');
   noUiSlider.create(pointsSlider, sliderOptions);
   noUiSlider.create(biddingSlider, sliderOptions);
 
@@ -115,7 +133,6 @@ function createPlayerSpan(player) {
  * @param {Object} match the match to add to the HTML scorepad
  */
 function addMatch(match) {
-  console.log(match);
   const table = document.getElementById('table');
   const row = table.insertRow();
   for (let i = 0; i < 4; i += 1) {
@@ -141,21 +158,17 @@ function addMatch(match) {
 
 /**
  * Saves a match to this scorepad using the values entered by the user.
- *
- * @param {Event} event the form submit event that triggered the save
  */
-function saveMatch(event) {
-  event.preventDefault();
+function saveMatch() {
+  const saveButton = document.getElementById('save-button');
 
-  const pointsSlider = document.getElementById('slider-points');
-  const biddingSlider = document.getElementById('slider-bidding');
   const {
     winner1,
     winner2,
     team,
     bid,
     'special-points': specialPoints
-  } = event.target.elements;
+  } = form.elements;
 
   const bids = Array.from(bid).filter(checkbox => checkbox.checked);
 
@@ -173,11 +186,58 @@ function saveMatch(event) {
       ...match,
       ...update
     });
+
+
+    form.reset();
+
+    saveButton.disabled = true;
+    specialPoints.selectedIndex = SPECIAL_MAX;
+    pointsSlider.noUiSlider.set(sliderOptions.start);
+    biddingSlider.noUiSlider.set(sliderOptions.start);
+
+    [winner1, winner2].forEach((winnerSelect) => {
+      /* eslint-disable no-param-reassign */
+      winnerSelect.selectedIndex = -1;
+      Array.from(winnerSelect.options).forEach((option) => {
+        option.disabled = false;
+      });
+    });
   }, match);
+}
+
+/**
+ * Initializes the select elements that are used to select a match's winners.
+ */
+function initWinnerSelects() {
+  const saveButton = document.getElementById('save-button');
+  const winnerSelects = [
+    form.elements.winner1,
+    form.elements.winner2
+  ];
+
+  winnerSelects.forEach((winnerSelect) => {
+    addPlayers(winnerSelect, players);
+    winnerSelect.selectedIndex = -1;
+    winnerSelect.onchange = () => {
+      winnerSelects.forEach((otherSelect) => {
+        if (otherSelect !== winnerSelect) {
+          Array.from(otherSelect.options).forEach((option) => {
+            option.disabled = option.value === winnerSelect.value;
+          });
+        }
+
+        saveButton.disabled = !(otherSelect.value && winnerSelect.value);
+      });
+    };
+  });
 }
 
 window.onload = () => {
   scorepadId = getParam('scorepad');
+  pointsSlider = document.getElementById('slider-points');
+  biddingSlider = document.getElementById('slider-bidding');
+  form = document.getElementById('write-blog');
+
   sendRequest('GET', `/api/scorepads/${scorepadId}`, (scorepad) => {
     const tableHeader = document.getElementById('scorepad-header');
     players = scorepad.players; // eslint-disable-line prefer-destructuring
@@ -192,12 +252,8 @@ window.onload = () => {
       tableHeader.insertBefore(playerHeader, gameHeader);
     });
 
+    initWinnerSelects();
 
-    for (let i = 1; i < 3; i += 1) {
-      const winnerSelect = document.getElementById(`winner${i}`);
-      addPlayers(winnerSelect, players);
-      winnerSelect.selectedIndex = -1;
-    }
     scorepad.matches.forEach(addMatch);
 
     const dealer = document.getElementById('dealer');
@@ -208,16 +264,17 @@ window.onload = () => {
 
   initSliders();
 
-
   const specialPoints = document.getElementById('special-points');
-  for (let i = -5; i <= 5; i += 1) {
+  for (let i = -SPECIAL_MAX; i <= SPECIAL_MAX; i += 1) {
     const opt = document.createElement('option');
     opt.value = i;
     opt.textContent = i;
     specialPoints.appendChild(opt);
   }
-  specialPoints.selectedIndex = 5;
+  specialPoints.selectedIndex = SPECIAL_MAX;
 
-  const form = document.getElementById('write-blog');
-  form.onsubmit = saveMatch;
+  form.onsubmit = (event) => {
+    event.preventDefault();
+    saveMatch();
+  };
 };
