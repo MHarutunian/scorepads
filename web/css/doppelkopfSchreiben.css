@@ -9,14 +9,31 @@ td {
   height: 25px;
   border: 1px solid black;
   padding: 5px;
+  text-align: center;
+}
+
+.header {
+  background-color: rgb(12, 240, 126);
 }
 
 .player {
-  background-color: yellowgreen;
+  background-color: rgb(127, 161, 47);
+}
+
+.scoreCell {
+  background-color: rgb(225, 225, 243);
+}
+
+.playerCell {
+  background-color: rgb(235, 222, 112);
+}
+
+.winnerCell {
+  background-color: rgb(128, 211, 211);
 }
 
 .game {
-  background-color: beige;
+  background-color: rgb(141, 113, 233);
 }
 
 .write-blog {
