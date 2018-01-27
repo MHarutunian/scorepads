@@ -8,9 +8,18 @@
 .table td {
   width: 13%;
   height: 25px;
-  border: 1px solid black;
   padding: 5px;
+  border-style: solid;
+  border-color: black;
   text-align: center;
+}
+
+.table td {
+  border-width: 1px;
+}
+
+.table th {
+  border-width: 3px 1px;
 }
 
 .table-header {
@@ -41,6 +50,10 @@
 
 .winnerCell {
   background-color: rgb(128, 211, 211);
+}
+
+.new-round td {
+  border-bottom-width: 3px;
 }
 
 .game {
