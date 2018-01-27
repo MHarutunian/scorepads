@@ -33,6 +33,11 @@ const sliderOptions = {
 let scorepadId;
 
 /**
+ * List of players of scorepad.
+ */
+let players;
+
+/**
  * Retrieves a single query parameter by its key.
  *
  * @param {string} key the key of the query parameter to get
@@ -87,8 +92,23 @@ function initSliders() {
  * @param {Object} match the match to add to the HTML scorepad
  */
 function addMatch(match) {
-  // TODO
   console.log(match);
+  const table = document.getElementById('table');
+  const row = table.insertRow();
+  for (let i = 0; i < 4; i += 1) {
+    const playerCell = row.insertCell();
+    // eslint-disable-next-line no-loop-func
+    const isWinner = match.winners.some(winnerId => winnerId === players[i]._id);
+    playerCell.textContent = isWinner ? match.score : '0';
+  }
+  const scoreCell = row.insertCell();
+  scoreCell.textContent = match.score;
+
+  match.winners.forEach((winnerId) => {
+    const winnerCell = row.insertCell();
+    const winner = players.find(player => (player._id === winnerId));
+    winnerCell.textContent = winner.name;
+  });
 }
 
 /**
@@ -131,7 +151,7 @@ function saveMatch(event) {
 window.onload = () => {
   scorepadId = getParam('scorepad');
   sendRequest('GET', `/api/scorepads/${scorepadId}`, (scorepad) => {
-    const { players } = scorepad;
+    players = scorepad.players; // eslint-disable-line prefer-destructuring
     for (let i = 1; i < 5; i += 1) {
       const playerText = document.createTextNode(players[i - 1].name);
       document.getElementById(`playerSel${i}`).appendChild(playerText);
@@ -141,6 +161,7 @@ window.onload = () => {
       addPlayers(winnerSelect, players);
       winnerSelect.selectedIndex = -1;
     }
+    scorepad.matches.forEach(addMatch);
   });
 
   initSliders();
