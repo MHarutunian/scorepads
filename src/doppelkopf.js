@@ -53,7 +53,7 @@ function createPlayerElement(player) {
   playerElement.className = 'player';
 
   const picture = document.createElement('img');
-  picture.className = 'picture';
+  picture.className = 'player-picture';
   picture.src = getPictureSrc(player && player.picture);
   playerElement.appendChild(picture);
 

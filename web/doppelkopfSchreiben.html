@@ -2,20 +2,25 @@
 <html>
   <head>
     <title>Scorepads - Doppelkopf Scoresheet</title>
+    <link rel="stylesheet" href="./css/common.css" />
     <link rel="stylesheet" href="./css/doppelkopfSchreiben.css" />
     <script type="text/javascript" src="./js/doppelkopfSchreiben.js"></script>
   </head>
   <body>
+    <div class="nav-header">
+      <a href="/">Zurück zur Startseite</a>
+      <a href="/players.html">Zur Spielerverwaltung</a>
+    </div>
     <div class="mainArea">
     <table class="table" id="table">
     <tr>
-      <th colspan="7">Doppelkopf - Geber:</th>
+      <th colspan="7">
+        <span class="table-header">
+          Doppelkopf - Geber: <span id="dealer"></span>
+        </span>
+      </th>
     </tr>
-    <tr>
-      <th class="player" id="playerSel1"></th>
-      <th class="player" id="playerSel2"></th>
-      <th class="player" id="playerSel3"></th>
-      <th class="player" id="playerSel4"></th>
+    <tr id="scorepad-header">
       <th class="game">Spiel</th>
       <th class="game">Spieler 1</th>
       <th class="game">Spieler 2</th>

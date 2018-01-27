@@ -1,14 +1,25 @@
 .table {
+  width: 80%;
   border-collapse: collapse;
   border: 1px solid black;
 }
 
 .table th,
-td {
-  width: 100px;
+.table td {
+  width: 13%;
   height: 25px;
   border: 1px solid black;
   padding: 5px;
+}
+
+.table-header,
+.player-item {
+  display: inline-flex;
+  align-items: center;
+}
+
+#dealer {
+  margin-left: 10px;
 }
 
 .player {

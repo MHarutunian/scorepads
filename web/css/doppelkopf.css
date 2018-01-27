@@ -26,10 +26,3 @@ fieldset {
   display: flex;
   align-items: center;
 }
-
-.player img {
-  width: 4em;
-  height: 4em;
-  border-radius: 2.5em;
-  margin-right: 1em;
-}

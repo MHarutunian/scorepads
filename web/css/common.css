@@ -1,0 +1,18 @@
+.nav-header {
+  display: flex;
+  margin: 10px 0;
+}
+
+.nav-header a {
+  margin: 0 10px;
+  padding: 10px;
+  background-color: #f4bc42;
+  border-radius: 15px;
+}
+
+.player-picture {
+  width: 4em;
+  height: 4em;
+  border-radius: 2.5em;
+  margin-right: 1em;
+}

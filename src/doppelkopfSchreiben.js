@@ -3,6 +3,7 @@ import 'nouislider/distribute/nouislider.min.css';
 
 import sendRequest from './utils/sendRequest';
 import addPlayers from './utils/addPlayers';
+import getPictureSrc from './utils/getPictureSrc';
 
 /**
  * Options used for range sliders that set the score and bidding values.
@@ -87,6 +88,28 @@ function initSliders() {
 }
 
 /**
+ * Creates and returns an HTML element representing a player object.
+ *
+ * The HTML element contains both the picture and the name of the player.
+ *
+ * @param {Object} player the player to create the span element for
+ * @return HTMLSpanElement the HTML element representing the `player`
+ */
+function createPlayerSpan(player) {
+  const playerSpan = document.createElement('span');
+  playerSpan.className = 'player-item';
+
+  const playerPicture = document.createElement('img');
+  playerPicture.className = 'player-picture';
+  playerPicture.src = getPictureSrc(player.picture);
+
+  playerSpan.appendChild(playerPicture);
+  playerSpan.appendChild(document.createTextNode(player.name));
+
+  return playerSpan;
+}
+
+/**
  * Adds a match to the HTML scorepad table.
  *
  * @param {Object} match the match to add to the HTML scorepad
@@ -153,24 +176,35 @@ function saveMatch(event) {
 window.onload = () => {
   scorepadId = getParam('scorepad');
   sendRequest('GET', `/api/scorepads/${scorepadId}`, (scorepad) => {
+    const tableHeader = document.getElementById('scorepad-header');
     players = scorepad.players; // eslint-disable-line prefer-destructuring
-    for (let i = 1; i < 5; i += 1) {
-      const player = players[i - 1];
-      player.score = 0;
-      const playerText = document.createTextNode(player.name);
-      document.getElementById(`playerSel${i}`).appendChild(playerText);
-    }
+
+    const gameHeader = tableHeader.firstChild;
+    players.forEach((player) => {
+      player.score = 0; // eslint-disable-line no-param-reassign
+      const playerHeader = document.createElement('th');
+      playerHeader.className = 'player';
+
+      playerHeader.appendChild(createPlayerSpan(player));
+      tableHeader.insertBefore(playerHeader, gameHeader);
+    });
+
+
     for (let i = 1; i < 3; i += 1) {
       const winnerSelect = document.getElementById(`winner${i}`);
       addPlayers(winnerSelect, players);
       winnerSelect.selectedIndex = -1;
     }
     scorepad.matches.forEach(addMatch);
+
+    const dealer = document.getElementById('dealer');
+    const dealerIndex = scorepad.matches.length % 4;
+    dealer.appendChild(createPlayerSpan(players[dealerIndex]));
   });
 
   initSliders();
 
-  for (let i = 0; i < 10; i += 1) {
+  for (let i = -10; i < 10; i += 1) {
     const specialPoints = document.getElementById('special-points');
     const opt = document.createElement('option');
     opt.value = i;
