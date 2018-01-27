@@ -120,6 +120,7 @@ function addMatch(match) {
   const row = table.insertRow();
   for (let i = 0; i < 4; i += 1) {
     const playerCell = row.insertCell();
+    playerCell.className = 'playerCell';
     const player = players[i];
     // eslint-disable-next-line no-loop-func
     const isWinner = match.winners.some(winnerId => winnerId === player._id);
@@ -127,12 +128,14 @@ function addMatch(match) {
     playerCell.textContent = player.score;
   }
   const scoreCell = row.insertCell();
+  scoreCell.className = 'scoreCell';
   scoreCell.textContent = match.score;
 
   match.winners.forEach((winnerId) => {
     const winnerCell = row.insertCell();
     const winner = players.find(player => (player._id === winnerId));
     winnerCell.textContent = winner.name;
+    winnerCell.className = 'winnerCell';
   });
 }
 
