@@ -46,7 +46,7 @@ let dealer;
 /**
  * Count of matches played.
  */
-let matchIndex;
+let matchIndex = 0;
 
 /**
  * Retrieves a single query parameter by its key.
@@ -147,6 +147,10 @@ function addMatch(match) {
     winnerCell.textContent = winner.name;
     winnerCell.className = 'winnerCell';
   });
+  matchIndex += 1;
+  if ((matchIndex) % players.length === 0) {
+    row.className = 'new-round';
+  }
 }
 
 /**
@@ -183,7 +187,6 @@ function saveMatch(event) {
       ...match,
       ...update
     });
-    matchIndex += 1;
     const dealerIndex = (matchIndex) % players.length;
     dealer.replaceChild(createPlayerSpan(players[dealerIndex]), dealer.firstChild);
   }, match);
@@ -211,12 +214,12 @@ window.onload = () => {
       addPlayers(winnerSelect, players);
       winnerSelect.selectedIndex = -1;
     }
-    scorepad.matches.forEach(addMatch);
 
     dealer = document.getElementById('dealer');
-    matchIndex = scorepad.matches.length > 0 ? scorepad.matches.length - 1 : players.length - 1;
     const dealerIndex = (matchIndex) % players.length;
     dealer.appendChild(createPlayerSpan(players[dealerIndex]));
+
+    scorepad.matches.forEach(addMatch);
   });
 
   initSliders();
