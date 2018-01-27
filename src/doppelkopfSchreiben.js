@@ -201,19 +201,22 @@ window.onload = () => {
     scorepad.matches.forEach(addMatch);
 
     const dealer = document.getElementById('dealer');
-    const dealerIndex = scorepad.matches.length % 4;
+    const matchIndex = scorepad.matches.length > 0 ? scorepad.matches.length - 1 : players.length - 1;
+    const dealerIndex = (matchIndex) % players.length;
     dealer.appendChild(createPlayerSpan(players[dealerIndex]));
   });
 
   initSliders();
 
-  for (let i = -10; i < 10; i += 1) {
-    const specialPoints = document.getElementById('special-points');
+
+  const specialPoints = document.getElementById('special-points');
+  for (let i = -5; i <= 5; i += 1) {
     const opt = document.createElement('option');
     opt.value = i;
     opt.textContent = i;
     specialPoints.appendChild(opt);
   }
+  specialPoints.selectedIndex = 5;
 
   const form = document.getElementById('write-blog');
   form.onsubmit = saveMatch;
