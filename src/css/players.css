@@ -4,10 +4,10 @@
 }
 
 .player-item {
-  width: 20%;
+  width: 450px;
 }
 
-.player-button {
+.player-buttons {
   margin-left: auto;
 }
 
@@ -16,5 +16,5 @@
 }
 
 .player-picture {
-  margin: 1em;
+  margin: 10px;
 }

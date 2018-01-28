@@ -1,5 +1,7 @@
 import getPictureSrc from './utils/getPictureSrc';
 import sendRequest from './utils/sendRequest';
+import './css/common.css';
+import './css/players.css';
 
 /**
  * The path to the default API endpoint for players.
@@ -108,7 +110,6 @@ function addPlayer(player, existingItem = null) {
 
   const editButton = document.createElement('button');
   editButton.type = 'button';
-  editButton.className = 'player-button';
   editButton.onclick = () => {
     editPlayer(player);
   };
@@ -116,7 +117,6 @@ function addPlayer(player, existingItem = null) {
 
   const deleteButton = document.createElement('button');
   deleteButton.type = 'button';
-  deleteButton.className = 'player-button';
   deleteButton.onclick = () => {
     sendRequest('DELETE', `${API_PATH}/${player._id}`, () => {
       list.removeChild(item);
@@ -124,10 +124,14 @@ function addPlayer(player, existingItem = null) {
   };
   deleteButton.textContent = 'löschen';
 
+  const buttonContainer = document.createElement('div');
+  buttonContainer.className = 'player-buttons';
+  buttonContainer.appendChild(editButton);
+  buttonContainer.appendChild(deleteButton);
+
   item.appendChild(picture);
   item.appendChild(document.createTextNode(player.name));
-  item.appendChild(editButton);
-  item.appendChild(deleteButton);
+  item.appendChild(buttonContainer);
 
   if (item.parentNode !== list) {
     list.appendChild(item);
