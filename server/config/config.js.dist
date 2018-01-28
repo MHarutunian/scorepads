@@ -1,4 +1,5 @@
 module.exports = {
+  dev: true,
   mongodb: {
     host: 'localhost',
     port: 27017,

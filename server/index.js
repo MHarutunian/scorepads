@@ -1,25 +1,33 @@
-/* eslint-disable import/no-extraneous-dependencies */
-const webpack = require('webpack');
-const webpackConfig = require('./config/webpack.config.dev');
-const webpackDevMiddleware = require('webpack-dev-middleware');
-const webpackHotMiddleware = require('webpack-hot-middleware');
 const express = require('express');
 const bodyParser = require('body-parser');
 const players = require('./api/players');
 const scorepads = require('./api/scorepads');
+const config = require('./config/config');
 
-const compiler = webpack(webpackConfig);
 const app = express();
+
+
+if (config.dev) {
+  /* eslint-disable global-require,import/no-extraneous-dependencies */
+  const webpack = require('webpack');
+  const webpackConfig = require('./config/webpack.config.dev');
+  const webpackDevMiddleware = require('webpack-dev-middleware');
+  const webpackHotMiddleware = require('webpack-hot-middleware');
+  /* eslint-enable global-require,import/no-extraneous-dependencies */
+
+  const compiler = webpack(webpackConfig);
+
+  app.use(webpackDevMiddleware(compiler, {
+    publicPath: webpackConfig.output.publicPath
+  }));
+
+  app.use(webpackHotMiddleware(compiler));
+}
 
 // we increase the body limit here to allow bigger images in profile picture uploads
 // in the future we probably want to scale the images before uploading them
 app.use(bodyParser.json({ limit: '15mb' }));
 
-app.use(webpackDevMiddleware(compiler, {
-  publicPath: webpackConfig.output.publicPath
-}));
-
-app.use(webpackHotMiddleware(compiler));
 
 app.use('/', express.static('web', {
   index: 'doppelkopf.html'
