@@ -149,7 +149,6 @@ function addMatch(match) {
     const playerCell = row.insertCell();
     playerCell.className = 'playerCell';
     const player = players[i];
-    // eslint-disable-next-line no-loop-func
     const isWinner = match.winners.some(winnerId => winnerId === player._id);
     player.score = isWinner ? match.score + player.score : player.score;
     playerCell.textContent = player.score;
@@ -225,8 +224,8 @@ function saveMatch() {
     pointsSlider.noUiSlider.set(sliderOptions.start);
     biddingSlider.noUiSlider.set(sliderOptions.start);
 
+    /* eslint-disable no-param-reassign */
     [winner1, winner2].forEach((winnerSelect) => {
-      /* eslint-disable no-param-reassign */
       winnerSelect.selectedIndex = -1;
       Array.from(winnerSelect.options).forEach((option) => {
         option.disabled = false;
@@ -260,6 +259,7 @@ function initWinnerSelects() {
       });
     };
   });
+  /* eslint-enable no-param-reassign */
 }
 
 window.onload = () => {
@@ -270,11 +270,13 @@ window.onload = () => {
 
   sendRequest('GET', `/api/scorepads/${scorepadId}`, (scorepad) => {
     const tableHeader = document.getElementById('scorepad-header');
-    players = scorepad.players; // eslint-disable-line prefer-destructuring
+    players = scorepad.players.map(player => ({
+      ...player,
+      score: 0
+    }));
 
     const gameHeader = tableHeader.firstChild;
     players.forEach((player) => {
-      player.score = 0; // eslint-disable-line no-param-reassign
       const playerHeader = document.createElement('th');
       playerHeader.className = 'player';
 
