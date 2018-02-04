@@ -212,12 +212,35 @@ function createDealerSpan() {
   return createPlayerSpan(players[dealerIndex]);
 }
 
+
+function hidePopup() {
+  const saveButton = document.getElementById('save-button');
+  const {
+    winner1,
+    winner2,
+    'special-points': specialPoints
+  } = form.elements;
+  form.reset();
+  saveButton.disabled = true;
+  specialPoints.selectedIndex = SPECIAL_MAX;
+  pointsSlider.noUiSlider.set(sliderOptions.start);
+  biddingSlider.noUiSlider.set(sliderOptions.start);
+
+  /* eslint-disable no-param-reassign */
+  [winner1, winner2].forEach((winnerSelect) => {
+    winnerSelect.selectedIndex = -1;
+    Array.from(winnerSelect.options).forEach((option) => {
+      option.disabled = false;
+    });
+  });
+  /* eslint-enable no-param-reassign */
+  const popup = document.getElementById('write-popup');
+  popup.style.display = 'none';
+}
 /**
  * Saves a match to this scorepad using the values entered by the user.
  */
 function saveMatch() {
-  const saveButton = document.getElementById('save-button');
-
   const {
     winner1,
     winner2,
@@ -244,22 +267,10 @@ function saveMatch() {
     });
     dealer.replaceChild(createDealerSpan(), dealer.firstChild);
 
-    form.reset();
-    saveButton.disabled = true;
-    specialPoints.selectedIndex = SPECIAL_MAX;
-    pointsSlider.noUiSlider.set(sliderOptions.start);
-    biddingSlider.noUiSlider.set(sliderOptions.start);
-
-    /* eslint-disable no-param-reassign */
-    [winner1, winner2].forEach((winnerSelect) => {
-      winnerSelect.selectedIndex = -1;
-      Array.from(winnerSelect.options).forEach((option) => {
-        option.disabled = false;
-      });
-    });
-    /* eslint-enable no-param-reassign */
+    hidePopup();
   }, match);
 }
+
 
 /**
  * Initializes the select elements that are used to select a match's winners.
@@ -319,6 +330,19 @@ window.onload = () => {
     specialPoints.appendChild(opt);
   }
   specialPoints.selectedIndex = SPECIAL_MAX;
+
+  const addButton = document.getElementById('add-match');
+
+  addButton.onclick = () => {
+    const popup = document.getElementById('write-popup');
+    popup.style.display = 'block';
+  };
+
+  const abortButton = document.getElementById('abort-button');
+
+  abortButton.onclick = () => {
+    hidePopup();
+  };
 
   form.onsubmit = (event) => {
     event.preventDefault();

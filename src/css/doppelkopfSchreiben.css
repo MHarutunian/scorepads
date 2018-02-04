@@ -99,3 +99,11 @@
 .noUi-value {
   top: 15px;
 }
+
+#write-popup {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: white;
+}

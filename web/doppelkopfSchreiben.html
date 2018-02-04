@@ -24,58 +24,62 @@
       <th class="game">Spieler 2</th>
     </tr>
     </table>
-    <form class="write-blog" id="write-blog">
-      <div class="write-div">
-        <select id="winner1" name="winner1" class="write-input">
-        </select>
+    <div id="write-popup">
+      <form class="write-blog" id="write-blog">
+        <div class="write-div">
+          <select id="winner1" name="winner1" class="write-input">
+          </select>
 
-        <select id="winner2" name="winner2" class="write-input">
-        </select>
-      </div>
-
-      <div class="write-div">
-        <div class="write-input">
-          <input type="radio" name="team" id="re" value="re" checked/>
-          <label for="re">Re-Partei</label>
+          <select id="winner2" name="winner2" class="write-input">
+          </select>
         </div>
 
-        <div class="write-input">
-          <input type="radio" name="team" id="kontra" value="kontra"/>
-          <label for="kontra">Kontra-Partei</label>
+        <div class="write-div">
+          <div class="write-input">
+            <input type="radio" name="team" id="re" value="re" checked/>
+            <label for="re">Re-Partei</label>
+          </div>
+
+          <div class="write-input">
+            <input type="radio" name="team" id="kontra" value="kontra"/>
+            <label for="kontra">Kontra-Partei</label>
+          </div>
         </div>
-      </div>
 
-      <div class="write-div">
-        <div class="write-input">
-          <input type="checkbox" name="bid" id="re-bid" value="re"/>
-          <label for="re-bid">Re angesagt</label>
+        <div class="write-div">
+          <div class="write-input">
+            <input type="checkbox" name="bid" id="re-bid" value="re"/>
+            <label for="re-bid">Re angesagt</label>
+          </div>
+
+          <div class="write-input">
+            <input type="checkbox" name="bid" id="kontra-bid" value="kontra"/>
+            <label for="kontra-bid">Kontra angesagt</label>
+          </div>
         </div>
 
-        <div class="write-input">
-          <input type="checkbox" name="bid" id="kontra-bid" value="kontra"/>
-          <label for="kontra-bid">Kontra angesagt</label>
+        <div class="write-points">
+          <label for="slider-points">Keine:</label>
+          <div id="slider-points" class="write-slider"></div>
         </div>
-      </div>
 
-      <div class="write-points">
-        <label for="slider-points">Keine:</label>
-        <div id="slider-points" class="write-slider"></div>
-      </div>
+        <div class="write-points">
+          <label for="slider-bidding">Angesagt:</label>
+          <div id="slider-bidding" class="write-slider"></div>
+        </div>
 
-      <div class="write-points">
-        <label for="slider-bidding">Angesagt:</label>
-        <div id="slider-bidding" class="write-slider"></div>
-      </div>
+        <div class="write-div">
+          <label for="special-points">Sonderpunkte</label>
+          <select id="special-points" name="special-points"></select>
+        </div>
 
-      <div class="write-div">
-        <label for="special-points">Sonderpunkte</label>
-        <select id="special-points" name="special-points"></select>
-      </div>
-
-      <div class="write-div">
-        <input id="save-button" type="submit" value="Speichern" disabled/>
-      </div>
-    </form>
+        <div class="write-div">
+          <input id="save-button" type="submit" value="Speichern" disabled/>
+          <input id="abort-button" type="button" value="Abbrechen"/>
+        </div>
+      </form>
+    </div>
+    <input id="add-match" type="button" value="Spiel hinzufügen"/>
   </div>
   </body>
 </html>
