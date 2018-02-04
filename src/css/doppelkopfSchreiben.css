@@ -60,10 +60,22 @@
   background-color: rgb(141, 113, 233);
 }
 
+.popup {
+  display: none;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  padding: 30px;
+  background: rgba(255, 255, 255, 0.8);
+}
+
 .write-blog {
   width: 50%;
   margin: 0 auto;
-  padding: 15px;
+  padding: 10px 30px;
+  background: rgb(255, 230, 175);
 }
 
 .write-div {
@@ -98,12 +110,4 @@
 
 .noUi-value {
   top: 15px;
-}
-
-#write-popup {
-  display: none;
-  position: absolute;
-  top: 0;
-  left: 0;
-  background: white;
 }
