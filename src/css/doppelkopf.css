@@ -1,5 +1,5 @@
-.mainArea {
-  width: 1000px;
+.main-area {
+  width: 90%;
   padding: 10px;
   border: 1px solid black;
 }
@@ -11,10 +11,10 @@ fieldset {
 }
 
 .scorepad {
-  width: 75%;
+  width: 90%;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: space-evenly;
   margin: 15px 0;
 }
 

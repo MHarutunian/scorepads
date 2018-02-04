@@ -1,6 +1,8 @@
 import sendRequest from './utils/sendRequest';
 import getPictureSrc from './utils/getPictureSrc';
-import addPlayers from './utils/addPlayers';
+import initPlayerSelects from './utils/initPlayerSelects';
+import './css/common.css';
+import './css/doppelkopf.css';
 
 /**
  * The HTML element used to display the list of scorepads.
@@ -108,13 +110,11 @@ function createScorepadElement(scorepad) {
 
 window.onload = () => {
   sendRequest('GET', '/api/players', (players) => {
-    for (let i = 1; i < 5; i += 1) {
-      const playerSelect = document.getElementById(`player${i}`);
-      addPlayers(playerSelect, players);
-      playerSelect.selectedIndex = -1;
-    }
-
+    const playerSelect = document.getElementById('player-select');
     const beginButton = document.getElementById('begin');
+    const playerSelects = Array.from(playerSelect.getElementsByTagName('select'));
+    initPlayerSelects(playerSelects, players, beginButton);
+
     beginButton.onclick = initScorepad;
   });
 

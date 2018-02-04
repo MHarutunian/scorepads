@@ -2,8 +2,10 @@ import noUiSlider from 'nouislider';
 import 'nouislider/distribute/nouislider.min.css';
 
 import sendRequest from './utils/sendRequest';
-import addPlayers from './utils/addPlayers';
+import initPlayerSelects from './utils/initPlayerSelects';
 import getPictureSrc from './utils/getPictureSrc';
+import './css/common.css';
+import './css/doppelkopfSchreiben.css';
 
 /**
  * Options used for range sliders that set the score and bidding values.
@@ -32,6 +34,11 @@ const sliderOptions = {
  * Maximum number of special points that can be selected (positive or negative).
  */
 const SPECIAL_MAX = 5;
+
+/**
+ * Value in the player select used to indicate that the match was a solo.
+ */
+const PLAYER_SOLO = 'SOLO';
 
 /**
  * ID of the scorepad that is being edited.
@@ -145,24 +152,43 @@ function createPlayerSpan(player) {
 function addMatch(match) {
   const table = document.getElementById('table');
   const row = table.insertRow();
+  const isSolo = match.winners.some(winnerId => winnerId === PLAYER_SOLO);
+  let winnerScore = isSolo ? match.score * 3 : match.score;
+  let loserScore = isSolo ? -match.score : 0;
+
+  // if the match was a solo, but kontra is the winning team,
+  // the selected winners are actually losers
+  if (isSolo && match.team === 'kontra') {
+    winnerScore = -winnerScore;
+    loserScore = -loserScore;
+  }
+
   for (let i = 0; i < 4; i += 1) {
     const playerCell = row.insertCell();
     playerCell.className = 'playerCell';
     const player = players[i];
     const isWinner = match.winners.some(winnerId => winnerId === player._id);
-    player.score = isWinner ? match.score + player.score : player.score;
+
+    player.score += isWinner ? winnerScore : loserScore;
     playerCell.textContent = player.score;
   }
+
   const scoreCell = row.insertCell();
   scoreCell.className = 'scoreCell';
   scoreCell.textContent = match.score;
 
   match.winners.forEach((winnerId) => {
     const winnerCell = row.insertCell();
-    const winner = players.find(player => (player._id === winnerId));
-    winnerCell.textContent = winner.name;
     winnerCell.className = 'winnerCell';
+
+    if (winnerId === PLAYER_SOLO) {
+      winnerCell.textContent = PLAYER_SOLO;
+    } else {
+      const winner = players.find(player => (player._id === winnerId));
+      winnerCell.textContent = winner ? winner.name : 'Unbekannt';
+    }
   });
+
   matchIndex += 1;
   if ((matchIndex) % players.length === 0) {
     row.className = 'new-round';
@@ -231,6 +257,7 @@ function saveMatch() {
         option.disabled = false;
       });
     });
+    /* eslint-enable no-param-reassign */
   }, match);
 }
 
@@ -245,21 +272,12 @@ function initWinnerSelects() {
   ];
 
   winnerSelects.forEach((winnerSelect) => {
-    addPlayers(winnerSelect, players);
-    winnerSelect.selectedIndex = -1;
-    winnerSelect.onchange = () => {
-      winnerSelects.forEach((otherSelect) => {
-        if (otherSelect !== winnerSelect) {
-          Array.from(otherSelect.options).forEach((option) => {
-            option.disabled = option.value === winnerSelect.value;
-          });
-        }
-
-        saveButton.disabled = !(otherSelect.value && winnerSelect.value);
-      });
-    };
+    const soloOption = document.createElement('option');
+    soloOption.value = PLAYER_SOLO;
+    soloOption.textContent = PLAYER_SOLO;
+    winnerSelect.appendChild(soloOption);
   });
-  /* eslint-enable no-param-reassign */
+  initPlayerSelects(winnerSelects, players, saveButton);
 }
 
 window.onload = () => {
