@@ -114,8 +114,45 @@ function addMatch(id, match, onResult) {
   });
 }
 
+/**
+ * Updates an existing match for a scorepad document and re-calculates its score.
+ *
+ * @param {string} scorepadId the ID of the scorepad to update the match for
+ * @param {string} matchId the ID of the match to update
+ * @param {Object} match the updated match
+ * @param {function} onResult the callback to execute with the updated score
+ */
+function updateMatch(scorepadId, matchId, match, onResult) {
+  scorepadModel.findOne(scorepadId, (scorepad) => {
+    const score = calculateMatchScore(scorepad.game, match);
+    const update = {};
+    Object.keys(match).forEach((key) => {
+      update[`matches.$.${key}`] = match[key];
+    });
+
+    scorepadModel.withCollection((collection) => {
+      collection.updateOne({
+        _id: scorepad._id,
+        'matches._id': ObjectID(matchId)
+      }, {
+        $set: {
+          ...update,
+          'matches.$.score': score
+        }
+      }, (error) => {
+        if (error) {
+          throw error;
+        }
+
+        onResult(score);
+      });
+    });
+  });
+}
+
 exports.findById = findById;
 exports.get = get;
 exports.add = add;
 exports.deleteById = deleteById;
 exports.addMatch = addMatch;
+exports.updateMatch = updateMatch;

@@ -45,4 +45,10 @@ router.post('/:id/matches', (req, res) => {
   });
 });
 
+router.patch('/:scorepadId/matches/:matchId', (req, res) => {
+  scorepads.updateMatch(req.params.scorepadId, req.params.matchId, req.body, (score) => {
+    res.send({score});
+  })
+});
+
 module.exports = router;
