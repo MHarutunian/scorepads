@@ -113,7 +113,7 @@ function addPlayer(player, existingItem = null) {
   editButton.onclick = () => {
     editPlayer(player);
   };
-  editButton.textContent = 'bearbeiten';
+  editButton.textContent = 'Bearbeiten';
 
   const deleteButton = document.createElement('button');
   deleteButton.type = 'button';
@@ -122,7 +122,7 @@ function addPlayer(player, existingItem = null) {
       list.removeChild(item);
     });
   };
-  deleteButton.textContent = 'löschen';
+  deleteButton.textContent = 'Löschen';
 
   const buttonContainer = document.createElement('div');
   buttonContainer.className = 'player-buttons';

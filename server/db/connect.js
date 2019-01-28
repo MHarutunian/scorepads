@@ -11,12 +11,16 @@ const url = `mongodb://${host}:${port}/${path}`;
  * @param {function} onConnect callback that is executed with the connected database
  */
 function connect(onConnect) {
-  MongoClient.connect(url, (error, db) => {
+  MongoClient.connect(url, { useNewUrlParser: true }, (error, dbClient) => {
     if (error) {
       throw error;
     }
 
-    onConnect(db);
+    try {
+      onConnect(dbClient.db());
+    } finally {
+      dbClient.close();
+    }
   });
 }
 

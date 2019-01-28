@@ -21,12 +21,8 @@ function Model(name) {
  */
 Model.prototype.withCollection = function (callback) {
   connect((db) => {
-    try {
-      const collection = db.collection(this.name);
-      callback(collection);
-    } finally {
-      db.close();
-    }
+    const collection = db.collection(this.name);
+    callback(collection);
   });
 };
 
