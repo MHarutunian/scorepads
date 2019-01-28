@@ -14,6 +14,7 @@ module.exports = {
   ...config,
   entry,
   devtool: '#source-map',
+  mode: 'development',
   output: {
     path: '/',
     publicPath: '/js/',
