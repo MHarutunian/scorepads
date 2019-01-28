@@ -9,83 +9,83 @@
       <a href="/">Zurück zur Startseite</a>
       <a href="/players.html">Zur Spielerverwaltung</a>
     </div>
-    <div class="mainArea">
-    <table class="table" id="table">
-    <tr>
-      <th class="table-header" colspan="7">
-        <span class="header-content">
-          Doppelkopf - Geber: <span id="dealer"></span>
-        </span>
-      </th>
-    </tr>
-    <tr id="scorepad-header">
-      <th class="game">Spiel</th>
-      <th class="game">Spieler</th>
-      <th class="actions">Aktionen</th>
-    </tr>
-    </table>
+    <div>
+      <table class="table" id="table">
+        <tr>
+          <th class="table-header" colspan="7">
+            <span class="header-content">
+              Doppelkopf - Geber: <span id="dealer"></span>
+            </span>
+          </th>
+        </tr>
+        <tr id="scorepad-header">
+          <th class="game">Spiel</th>
+          <th class="game">Spieler</th>
+          <th class="actions">Aktionen</th>
+        </tr>
+      </table>
 
-    <div id="write-popup" class="popup">
-      <form class="write-blog" id="write-blog">
-        <h4>Spiel aufschreiben</h4>
-        <div class="write-div">
-          <label for="winner1" class="write-input">Spieler 1</label>
-          <label for="winner2" class="write-input">Spieler 2</label>
-        </div>
-        <div class="write-div">
-            <select id="winner1" name="winner1" class="write-input">
-            </select>
+      <div id="write-popup" class="popup">
+        <form class="write-blog" id="write-blog">
+          <h4>Spiel aufschreiben</h4>
+          <div class="write-div">
+            <label for="winner1" class="write-input">Spieler 1</label>
+            <label for="winner2" class="write-input">Spieler 2</label>
+          </div>
+          <div class="write-div">
+              <select id="winner1" name="winner1" class="write-input">
+              </select>
 
-            <select id="winner2" name="winner2" class="write-input">
-            </select>
-        </div>
-
-        <div class="write-div">
-          <div class="write-input">
-            <input type="radio" name="team" id="re" value="re" checked/>
-            <label for="re">Re-Partei</label>
+              <select id="winner2" name="winner2" class="write-input">
+              </select>
           </div>
 
-          <div class="write-input">
-            <input type="radio" name="team" id="kontra" value="kontra"/>
-            <label for="kontra">Kontra-Partei</label>
+          <div class="write-div">
+            <div class="write-input">
+              <input type="radio" name="team" id="re" value="re" checked/>
+              <label for="re">Re-Partei</label>
+            </div>
+
+            <div class="write-input">
+              <input type="radio" name="team" id="kontra" value="kontra"/>
+              <label for="kontra">Kontra-Partei</label>
+            </div>
           </div>
-        </div>
 
-        <div class="write-div">
-          <div class="write-input">
-            <input type="checkbox" name="bid" id="re-bid" value="re"/>
-            <label for="re-bid">Re angesagt</label>
+          <div class="write-div">
+            <div class="write-input">
+              <input type="checkbox" name="bid" id="re-bid" value="re"/>
+              <label for="re-bid">Re angesagt</label>
+            </div>
+
+            <div class="write-input">
+              <input type="checkbox" name="bid" id="kontra-bid" value="kontra"/>
+              <label for="kontra-bid">Kontra angesagt</label>
+            </div>
           </div>
 
-          <div class="write-input">
-            <input type="checkbox" name="bid" id="kontra-bid" value="kontra"/>
-            <label for="kontra-bid">Kontra angesagt</label>
+          <div class="write-points">
+            <label for="slider-points">Keine:</label>
+            <div id="slider-points" class="write-slider"></div>
           </div>
-        </div>
 
-        <div class="write-points">
-          <label for="slider-points">Keine:</label>
-          <div id="slider-points" class="write-slider"></div>
-        </div>
+          <div class="write-points">
+            <label for="slider-bidding">Angesagt:</label>
+            <div id="slider-bidding" class="write-slider"></div>
+          </div>
 
-        <div class="write-points">
-          <label for="slider-bidding">Angesagt:</label>
-          <div id="slider-bidding" class="write-slider"></div>
-        </div>
+          <div class="write-div">
+            <label for="special-points">Sonderpunkte</label>
+            <select id="special-points" name="special-points"></select>
+          </div>
 
-        <div class="write-div">
-          <label for="special-points">Sonderpunkte</label>
-          <select id="special-points" name="special-points"></select>
-        </div>
-
-        <div class="write-div">
-          <input id="save-button" type="submit" value="Speichern" disabled/>
-          <input id="abort-button" type="button" value="Abbrechen"/>
-        </div>
-      </form>
+          <div class="write-div">
+            <input id="save-button" type="submit" value="Speichern" disabled/>
+            <input id="abort-button" type="button" value="Abbrechen"/>
+          </div>
+        </form>
+      </div>
+      <input id="add-match" type="button" value="Spiel hinzufügen"/>
     </div>
-    <input id="add-match" type="button" value="Spiel hinzufügen"/>
-  </div>
   </body>
 </html>
