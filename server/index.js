@@ -1,9 +1,9 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const domain = require('domain');
 const players = require('./api/players');
 const scorepads = require('./api/scorepads');
 const config = require('./config/config');
-const domain = require('domain');
 
 const app = express();
 const appDomain = domain.create();

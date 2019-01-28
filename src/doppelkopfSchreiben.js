@@ -474,6 +474,14 @@ window.onload = () => {
     hidePopup();
   };
 
+  const writePopup = document.getElementById('write-popup');
+
+  writePopup.onclick = (event) => {
+    if (event.target === writePopup) {
+      hidePopup();
+    }
+  };
+
   form.onsubmit = (event) => {
     event.preventDefault();
     saveMatch();
