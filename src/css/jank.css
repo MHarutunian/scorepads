@@ -1,0 +1,11 @@
+.player {
+  margin: 20px;
+}
+
+.player select {
+  margin-right: 15px;
+}
+
+.player button {
+  margin-left: 15px;
+}

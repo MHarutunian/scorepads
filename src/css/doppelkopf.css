@@ -22,11 +22,6 @@ fieldset {
   font-weight: bold;
 }
 
-.player {
-  display: flex;
-  align-items: center;
-}
-
 .buttons {
   margin: 10px 20px 0 0;
   padding: 5px;

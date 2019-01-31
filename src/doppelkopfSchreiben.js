@@ -2,10 +2,10 @@ import noUiSlider from 'nouislider';
 import 'nouislider/distribute/nouislider.min.css';
 
 import sendRequest from './utils/sendRequest';
-import initPlayerSelects from './utils/initPlayerSelects';
 import getPictureSrc from './utils/getPictureSrc';
 import './css/common.css';
 import './css/doppelkopfSchreiben.css';
+import PlayerSelectHelper from './utils/PlayerSelectHelper';
 
 /**
  * Options used for range sliders that set the score and bidding values.
@@ -49,6 +49,11 @@ let scorepadId;
  * List of players of scorepad.
  */
 let players;
+
+/**
+ * Helper class for player `<select>` elements.
+ */
+let playerSelectHelper;
 
 /**
  * The HTML form used to enter and save match data.
@@ -306,6 +311,8 @@ function editMatch(match) {
 
   const popup = document.getElementById('write-popup');
   popup.style.display = 'block';
+
+  playerSelectHelper.checkOptions();
 }
 
 /**
@@ -418,7 +425,9 @@ function initWinnerSelects() {
     soloOption.textContent = PLAYER_SOLO;
     winnerSelect.appendChild(soloOption);
   });
-  initPlayerSelects(winnerSelects, players, saveButton);
+
+  playerSelectHelper = new PlayerSelectHelper(players, saveButton);
+  playerSelectHelper.addAll(winnerSelects);
 }
 
 window.onload = () => {
@@ -437,7 +446,7 @@ window.onload = () => {
     const gameHeader = tableHeader.firstChild;
     players.forEach((player) => {
       const playerHeader = document.createElement('th');
-      playerHeader.className = 'player';
+      playerHeader.className = 'player-header';
 
       playerHeader.appendChild(createPlayerSpan(player));
       tableHeader.insertBefore(playerHeader, gameHeader);
