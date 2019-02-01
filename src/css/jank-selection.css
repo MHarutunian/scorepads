@@ -1,0 +1,38 @@
+#players {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+  width: 90%;
+}
+
+.player-link {
+  align-items: center;
+  background: transparent;
+  border: medium solid black;
+  border-radius: 5%;
+  color: black;
+  display: flex;
+  flex-direction: column;
+  font-weight: bold;
+  font-size: x-large;
+  justify-content: space-between;
+  margin: 20px;
+  padding: 0;
+  text-decoration: none;
+  width: 25%;
+}
+
+.player-link:hover {
+  background: green;
+  border-color: green;
+}
+
+.player-link:visited {
+  color: black;
+}
+
+.player-link img {
+  border-radius: 5%;
+  margin-bottom: 50px;
+  width: 100%;
+}

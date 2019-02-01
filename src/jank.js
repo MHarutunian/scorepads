@@ -58,7 +58,7 @@ function addPlayerSelect() {
     deleteButton.onclick = () => {
       selectionContainer.removeChild(container);
       playerSelectHelper.remove(select);
-    }
+    };
 
     container.appendChild(deleteButton);
   }
@@ -68,11 +68,10 @@ function addPlayerSelect() {
 }
 
 window.onload = () => {
+  const beginButton = document.getElementById('begin');
   sendRequest('GET', '/api/players', (result) => {
     players = result;
-    const beginButton = document.getElementById('begin');
     const addPlayerButton = document.getElementById('add-player');
-    beginButton.onclick = () => alert('TODO');
 
     playerSelectHelper = new PlayerSelectHelper(players, beginButton);
 
@@ -83,4 +82,18 @@ window.onload = () => {
     addPlayerButton.onclick = addPlayerSelect;
     addPlayerButton.disabled = false;
   });
+
+  beginButton.onclick = () => {
+    sendRequest(
+      'POST',
+      '/api/scorepads',
+      (scorepad) => {
+        window.location.href = `jank-selection.html?scorepad=${scorepad._id}`;
+      },
+      {
+        game: 'JanK',
+        players: playerSelectHelper.selects.map(s => s.value)
+      }
+    );
+  };
 };

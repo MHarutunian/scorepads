@@ -2,6 +2,7 @@ import noUiSlider from 'nouislider';
 import 'nouislider/distribute/nouislider.min.css';
 
 import sendRequest from './utils/sendRequest';
+import getParam from './utils/getParam';
 import getPictureSrc from './utils/getPictureSrc';
 import './css/common.css';
 import './css/doppelkopfSchreiben.css';
@@ -86,31 +87,6 @@ let matchIndex = 0;
 let matchId = null;
 
 /**
- * Retrieves a single query parameter by its key.
- *
- * @param {string} key the key of the query parameter to get
- * @return {string} the query parameter for the specified key or `null` if the
- *         parameter doesn't exist
- */
-function getParam(key) {
-  const query = window.location.search;
-  const keyIndex = query.indexOf(key);
-
-  if (keyIndex < 0) {
-    return null;
-  }
-
-  const startIndex = query.indexOf('=', keyIndex) + 1;
-  const endIndex = query.indexOf('&', keyIndex);
-
-  if (endIndex < startIndex) {
-    return query.substring(startIndex);
-  }
-
-  return query.substring(startIndex, endIndex);
-}
-
-/**
  * Initializes the range sliders used to set the points and bidding.
  */
 function initSliders() {
@@ -160,7 +136,9 @@ function createPlayerSpan(player) {
  * @param {Object} match the match to add to the HTML scorepad
  */
 function addMatch(match) {
-  const { _id: id, winners, team, score } = match;
+  const {
+    _id: id, winners, team, score
+  } = match;
   const table = document.getElementById('table');
   const existingMatch = document.getElementById(id);
 
@@ -198,8 +176,8 @@ function addMatch(match) {
       player.score.push({
         matchId: id,
         score: actualScore
-      })
-    };
+      });
+    }
 
     playerCell.textContent = calculateScore(player.score, id);
   }
@@ -208,12 +186,14 @@ function addMatch(match) {
     matchIndex += 1;
   } else {
     // we updated an existing row, so we need to re-calculate the score for all following rows
-    Array.from(table.rows).slice(rowIndex + 1).forEach(row => {
-      for (let i = 0; i < 4; i += 1) {
-        const player = players[i];
-        row.cells[i].textContent = calculateScore(player.score, row.id);
-      }
-    });
+    Array.from(table.rows)
+      .slice(rowIndex + 1)
+      .forEach((row) => {
+        for (let i = 0; i < 4; i += 1) {
+          const player = players[i];
+          row.cells[i].textContent = calculateScore(player.score, row.id);
+        }
+      });
   }
 
   const scoreCell = row.insertCell();
@@ -225,7 +205,7 @@ function addMatch(match) {
 
   winners.forEach((winnerId) => {
     if (winnerId !== PLAYER_SOLO) {
-      const winner = players.find(player => (player._id === winnerId));
+      const winner = players.find(player => player._id === winnerId);
       const winnerName = winner ? winner.name : 'Unbekannt';
 
       if (winnerCell.textContent) {
@@ -243,9 +223,9 @@ function addMatch(match) {
     editMatch(match);
   };
   editButton.textContent = 'bearbeiten';
-  buttonCell.appendChild(editButton)
+  buttonCell.appendChild(editButton);
 
-  if ((matchIndex) % players.length === 0) {
+  if (matchIndex % players.length === 0) {
     row.className = 'new-round';
   }
 }
@@ -272,17 +252,9 @@ function calculateScore(scoreItems, matchId) {
 }
 
 function editMatch(match) {
+  const { team: teamSelect, 'special-points': specialPointsSelect } = form.elements;
   const {
-    team: teamSelect,
-    'special-points': specialPointsSelect
-  } = form.elements;
-  const {
-    winners,
-    team,
-    bids,
-    points,
-    bidding,
-    specialPoints
+    winners, team, bids, points, bidding, specialPoints
   } = match;
   matchId = match._id;
 
@@ -332,14 +304,9 @@ function createDealerSpan() {
   return createPlayerSpan(players[dealerIndex]);
 }
 
-
 function hidePopup() {
   const saveButton = document.getElementById('save-button');
-  const {
-    winner1,
-    winner2,
-    'special-points': specialPoints
-  } = form.elements;
+  const { winner1, winner2, 'special-points': specialPoints } = form.elements;
   form.reset();
   saveButton.disabled = true;
   specialPoints.selectedIndex = SPECIAL_MAX;
@@ -364,11 +331,7 @@ function hidePopup() {
  */
 function saveMatch() {
   const {
-    winner1,
-    winner2,
-    team,
-    bid,
-    'special-points': specialPoints
+    winner1, winner2, team, bid, 'special-points': specialPoints
   } = form.elements;
 
   const bids = Array.from(bid).filter(checkbox => checkbox.checked);
@@ -386,38 +349,44 @@ function saveMatch() {
 
   if (matchId !== null) {
     // update an existing match
-    sendRequest('PATCH', `${url}/${matchId}`, (response) => {
-      addMatch({
-        ...match,
-        _id: matchId,
-        score: response.score
-      });
-      hidePopup();
-    }, match);
+    sendRequest(
+      'PATCH',
+      `${url}/${matchId}`,
+      (response) => {
+        addMatch({
+          ...match,
+          _id: matchId,
+          score: response.score
+        });
+        hidePopup();
+      },
+      match
+    );
   } else {
     // create a new match
-    sendRequest('POST', url, (update) => {
-      addMatch({
-        ...match,
-        ...update
-      });
-      dealer.replaceChild(createDealerSpan(), dealer.firstChild);
+    sendRequest(
+      'POST',
+      url,
+      (update) => {
+        addMatch({
+          ...match,
+          ...update
+        });
+        dealer.replaceChild(createDealerSpan(), dealer.firstChild);
 
-      hidePopup();
-    }, match);
+        hidePopup();
+      },
+      match
+    );
   }
 }
-
 
 /**
  * Initializes the select elements that are used to select a match's winners.
  */
 function initWinnerSelects() {
   const saveButton = document.getElementById('save-button');
-  const winnerSelects = [
-    form.elements.winner1,
-    form.elements.winner2
-  ];
+  const winnerSelects = [form.elements.winner1, form.elements.winner2];
 
   winnerSelects.forEach((winnerSelect) => {
     const soloOption = document.createElement('option');

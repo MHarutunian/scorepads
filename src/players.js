@@ -187,15 +187,25 @@ function sendPlayer(id, name, picture) {
   };
 
   if (id) {
-    sendRequest('PUT', `${API_PATH}/${id}`, (player) => {
-      replacePlayer(player);
-      resetForm();
-    }, body);
+    sendRequest(
+      'PUT',
+      `${API_PATH}/${id}`,
+      (player) => {
+        replacePlayer(player);
+        resetForm();
+      },
+      body
+    );
   } else {
-    sendRequest('POST', API_PATH, (player) => {
-      addPlayer(player);
-      resetForm();
-    }, body);
+    sendRequest(
+      'POST',
+      API_PATH,
+      (player) => {
+        addPlayer(player);
+        resetForm();
+      },
+      body
+    );
   }
 }
 

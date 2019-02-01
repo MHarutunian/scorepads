@@ -1,4 +1,3 @@
-
 /**
  * Helper for `<select>` elements used to select players.
  *
@@ -20,10 +19,7 @@ function PlayerSelectHelper(players, actionButton) {
  * @param {HTMLSelectElement} select the element to add
  */
 PlayerSelectHelper.prototype.add = function (select) {
-  this.selects = [
-    ...this.selects,
-    select
-  ];
+  this.selects = [...this.selects, select];
 
   this.players.forEach((player) => {
     const option = document.createElement('option');
@@ -53,7 +49,7 @@ PlayerSelectHelper.prototype.add = function (select) {
  * @param {HTMLSelectElement[]} selects the elements to add
  */
 PlayerSelectHelper.prototype.addAll = function (selects) {
-  selects.forEach((select) => this.add(select));
+  selects.forEach(select => this.add(select));
 };
 
 /**
