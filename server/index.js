@@ -36,7 +36,7 @@ app.use(bodyParser.json({ limit: '15mb' }));
 
 
 app.use('/', express.static('web', {
-  index: 'doppelkopf.html'
+  index: 'index.html'
 }));
 
 app.use('/api/players', players);

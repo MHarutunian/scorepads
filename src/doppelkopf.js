@@ -1,6 +1,6 @@
 import sendRequest from './utils/sendRequest';
 import getPictureSrc from './utils/getPictureSrc';
-import initPlayerSelects from './utils/initPlayerSelects';
+import PlayerSelectHelper from './utils/PlayerSelectHelper';
 import './css/common.css';
 import './css/doppelkopf.css';
 
@@ -8,7 +8,6 @@ import './css/doppelkopf.css';
  * The HTML element used to display the list of scorepads.
  */
 let scorepadList;
-
 
 /**
  * Redirects the user to the specified scorepad.
@@ -113,7 +112,9 @@ window.onload = () => {
     const playerSelect = document.getElementById('player-select');
     const beginButton = document.getElementById('begin');
     const playerSelects = Array.from(playerSelect.getElementsByTagName('select'));
-    initPlayerSelects(playerSelects, players, beginButton);
+
+    const playerSelectHelper = new PlayerSelectHelper(players, beginButton);
+    playerSelectHelper.addAll(playerSelects);
 
     beginButton.onclick = initScorepad;
   });

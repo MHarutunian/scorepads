@@ -4,6 +4,8 @@ module.exports = {
   entry: {
     doppelkopf: './src/doppelkopf.js',
     doppelkopfSchreiben: './src/doppelkopfSchreiben.js',
+    index: './src/index.js',
+    jank: './src/jank.js',
     players: './src/players.js'
   },
   output: {
