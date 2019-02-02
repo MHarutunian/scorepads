@@ -1,12 +1,12 @@
-
 /**
  * Helper for `<select>` elements used to select players.
  *
- * Every player can only be selected once, and an associated button will only be enabled once all players have
- * been selected. Select elements can be added or removed to this helper at will.
+ * Every player can only be selected once, and an associated button will only be enabled once all
+ * players have been selected. Select elements can be added or removed to this helper at will.
  *
  * @param {Array} players the list of available players
- * @param {HTMLButtonElement} actionButton the button triggering an action once all players have been selected
+ * @param {HTMLButtonElement} actionButton the button triggering an action once all players have
+ *      been selected
  */
 function PlayerSelectHelper(players, actionButton) {
   this.selects = [];
@@ -20,10 +20,7 @@ function PlayerSelectHelper(players, actionButton) {
  * @param {HTMLSelectElement} select the element to add
  */
 PlayerSelectHelper.prototype.add = function (select) {
-  this.selects = [
-    ...this.selects,
-    select
-  ];
+  this.selects = [...this.selects, select];
 
   this.players.forEach((player) => {
     const option = document.createElement('option');
@@ -35,7 +32,8 @@ PlayerSelectHelper.prototype.add = function (select) {
 
   const onChange = select.onchange;
 
-  select.selectedIndex = -1;
+  select.selectedIndex = -1; // eslint-disable-line no-param-reassign
+  // eslint-disable-next-line no-param-reassign
   select.onchange = () => {
     if (typeof onChange === 'function') {
       onChange();
@@ -53,7 +51,7 @@ PlayerSelectHelper.prototype.add = function (select) {
  * @param {HTMLSelectElement[]} selects the elements to add
  */
 PlayerSelectHelper.prototype.addAll = function (selects) {
-  selects.forEach((select) => this.add(select));
+  selects.forEach(select => this.add(select));
 };
 
 /**
@@ -96,7 +94,7 @@ PlayerSelectHelper.prototype.checkOptions = function () {
   this.selects.forEach((otherSelect) => {
     Array.from(otherSelect.options).forEach((option) => {
       if (option.parentNode.value !== option.value) {
-        option.disabled = this.isOptionDisabled(option);
+        option.disabled = this.isOptionDisabled(option); // eslint-disable-line no-param-reassign
       }
     });
 

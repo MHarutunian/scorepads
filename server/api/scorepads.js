@@ -17,7 +17,6 @@ router.get('/:id', (req, res) => {
   });
 });
 
-
 router.post('/', (req, res) => {
   if (!req.body || !req.body.game || !req.body.players) {
     res.sendStatus(400);
@@ -47,8 +46,8 @@ router.post('/:id/matches', (req, res) => {
 
 router.patch('/:scorepadId/matches/:matchId', (req, res) => {
   scorepads.updateMatch(req.params.scorepadId, req.params.matchId, req.body, (score) => {
-    res.send({score});
-  })
+    res.send({ score });
+  });
 });
 
 module.exports = router;

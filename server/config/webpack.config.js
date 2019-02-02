@@ -6,6 +6,8 @@ module.exports = {
     doppelkopfSchreiben: './src/doppelkopfSchreiben.js',
     index: './src/index.js',
     jank: './src/jank.js',
+    'jank-pads': './src/jank-pads.js',
+    'jank-selection': './src/jank-selection.js',
     players: './src/players.js'
   },
   output: {
