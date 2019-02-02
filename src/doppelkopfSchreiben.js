@@ -84,7 +84,7 @@ let matchIndex = 0;
 /**
  * The ID of the match currently being edited, if any.
  */
-let matchId = null;
+let editId = null;
 
 /**
  * Initializes the range sliders used to set the points and bidding.
@@ -131,6 +131,68 @@ function createPlayerSpan(player) {
 }
 
 /**
+ * Calculates the score for up to a certain match based on a list of items.
+ *
+ * @param {Object} scoreItems the list of score items used to calculate the total score
+ * @param {string} matchId the ID of the match up to which to calculate the score
+ */
+function calculateScore(scoreItems, matchId) {
+  let totalScore = 0;
+
+  for (let i = 0; i < scoreItems.length; i += 1) {
+    const scoreItem = scoreItems[i];
+    totalScore += scoreItem.score;
+
+    if (scoreItem.matchId === matchId) {
+      break;
+    }
+  }
+
+  return totalScore;
+}
+
+/**
+ * Edits an existing match, re-calculating the scores of all players.
+ *
+ * @param {Object} match the match to edit
+ */
+function editMatch(match) {
+  const { team: teamSelect, 'special-points': specialPointsSelect } = form.elements;
+  const {
+    winners, team, bids, points, bidding, specialPoints
+  } = match;
+  editId = match._id;
+
+  winners.forEach((winner, i) => {
+    const winnerSelect = form.elements[`winner${i + 1}`];
+    const winnerOption = Array.from(winnerSelect.options).find(option => option.value === winner);
+
+    if (winnerOption) {
+      winnerSelect.selectedIndex = winnerOption.index;
+    }
+  });
+
+  const bidCheckboxes = Array.from(form.elements.bid);
+  bids.forEach((bid) => {
+    const checkbox = bidCheckboxes.find(cb => cb.value === bid);
+    checkbox.checked = true;
+  });
+
+  teamSelect.value = team;
+  specialPointsSelect.selectedIndex = SPECIAL_MAX + specialPoints;
+  pointsSlider.noUiSlider.set(points);
+  biddingSlider.noUiSlider.set(bidding);
+
+  const saveButton = document.getElementById('save-button');
+  saveButton.disabled = false;
+
+  const popup = document.getElementById('write-popup');
+  popup.style.display = 'block';
+
+  playerSelectHelper.checkOptions();
+}
+
+/**
  * Adds a match to the HTML scorepad table.
  *
  * @param {Object} match the match to add to the HTML scorepad
@@ -144,7 +206,7 @@ function addMatch(match) {
 
   let rowIndex = -1;
   if (existingMatch !== null) {
-    rowIndex = existingMatch.rowIndex;
+    rowIndex = existingMatch.rowIndex; // eslint-disable-line prefer-destructuring
     existingMatch.parentNode.removeChild(existingMatch);
   }
 
@@ -188,10 +250,11 @@ function addMatch(match) {
     // we updated an existing row, so we need to re-calculate the score for all following rows
     Array.from(table.rows)
       .slice(rowIndex + 1)
-      .forEach((row) => {
+      .forEach((followingRow) => {
         for (let i = 0; i < 4; i += 1) {
           const player = players[i];
-          row.cells[i].textContent = calculateScore(player.score, row.id);
+          // eslint-disable-next-line no-param-reassign
+          followingRow.cells[i].textContent = calculateScore(player.score, followingRow.id);
         }
       });
   }
@@ -231,63 +294,6 @@ function addMatch(match) {
 }
 
 /**
- * Calculates the score for up to a certain match based on a list of items.
- *
- * @param {Object} scoreItems the list of score items used to calculate the total score
- * @param {string} matchId the ID of the match up to which to calculate the score
- */
-function calculateScore(scoreItems, matchId) {
-  let totalScore = 0;
-
-  for (let i = 0; i < scoreItems.length; i++) {
-    const scoreItem = scoreItems[i];
-    totalScore += scoreItem.score;
-
-    if (scoreItem.matchId === matchId) {
-      break;
-    }
-  }
-
-  return totalScore;
-}
-
-function editMatch(match) {
-  const { team: teamSelect, 'special-points': specialPointsSelect } = form.elements;
-  const {
-    winners, team, bids, points, bidding, specialPoints
-  } = match;
-  matchId = match._id;
-
-  winners.forEach((winner, i) => {
-    const winnerSelect = form.elements[`winner${i + 1}`];
-    const winnerOption = Array.from(winnerSelect.options).find(option => option.value === winner);
-
-    if (winnerOption) {
-      winnerSelect.selectedIndex = winnerOption.index;
-    }
-  });
-
-  const bidCheckboxes = Array.from(form.elements.bid);
-  bids.forEach((bid) => {
-    const checkbox = bidCheckboxes.find(checkbox => checkbox.value === bid);
-    checkbox.checked = true;
-  });
-
-  teamSelect.value = team;
-  specialPointsSelect.selectedIndex = SPECIAL_MAX + specialPoints;
-  pointsSlider.noUiSlider.set(points);
-  biddingSlider.noUiSlider.set(bidding);
-
-  const saveButton = document.getElementById('save-button');
-  saveButton.disabled = false;
-
-  const popup = document.getElementById('write-popup');
-  popup.style.display = 'block';
-
-  playerSelectHelper.checkOptions();
-}
-
-/**
  * Creates and returns an HTML element used to display the current dealer.
  *
  * @return HTMLSpanElement the element displaying the current dealer
@@ -304,6 +310,9 @@ function createDealerSpan() {
   return createPlayerSpan(players[dealerIndex]);
 }
 
+/**
+ * Hides the popup that is used to enter match data.
+ */
 function hidePopup() {
   const saveButton = document.getElementById('save-button');
   const { winner1, winner2, 'special-points': specialPoints } = form.elements;
@@ -312,7 +321,7 @@ function hidePopup() {
   specialPoints.selectedIndex = SPECIAL_MAX;
   pointsSlider.noUiSlider.set(sliderOptions.start);
   biddingSlider.noUiSlider.set(sliderOptions.start);
-  matchId = null;
+  editId = null;
 
   /* eslint-disable no-param-reassign */
   [winner1, winner2].forEach((winnerSelect) => {
@@ -347,15 +356,15 @@ function saveMatch() {
 
   const url = `/api/scorepads/${scorepadId}/matches`;
 
-  if (matchId !== null) {
+  if (editId !== null) {
     // update an existing match
     sendRequest(
       'PATCH',
-      `${url}/${matchId}`,
+      `${url}/${editId}`,
       (response) => {
         addMatch({
           ...match,
-          _id: matchId,
+          _id: editId,
           score: response.score
         });
         hidePopup();

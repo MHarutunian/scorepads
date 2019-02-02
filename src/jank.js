@@ -75,7 +75,7 @@ window.onload = () => {
 
     playerSelectHelper = new PlayerSelectHelper(players, beginButton);
 
-    for (let i = 0; i < MIN_PLAYERS; i++) {
+    for (let i = 0; i < MIN_PLAYERS; i += 1) {
       addPlayerSelect();
     }
 
