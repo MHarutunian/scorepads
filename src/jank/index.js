@@ -1,8 +1,8 @@
-import getPictureSrc from './utils/getPictureSrc';
-import PlayerSelectHelper from './utils/PlayerSelectHelper';
-import sendRequest from './utils/sendRequest';
-import './css/common.css';
-import './css/jank.css';
+import getPictureSrc from '../utils/getPictureSrc';
+import PlayerSelectHelper from '../utils/PlayerSelectHelper';
+import sendRequest from '../utils/sendRequest';
+import '../css/common.css';
+import '../css/jank/index.css';
 
 /**
  * The minimum number of players required for playing JanK.
@@ -88,7 +88,7 @@ window.onload = () => {
       'POST',
       '/api/scorepads',
       (scorepad) => {
-        window.location.href = `jank-selection.html?scorepad=${scorepad._id}`;
+        window.location.href = `/jank/selection.html?scorepad=${scorepad._id}`;
       },
       {
         game: 'JanK',

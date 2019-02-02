@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const domain = require('domain');
 const players = require('./api/players');
 const scorepads = require('./api/scorepads');
+const terms = require('./api/jank/terms');
 const config = require('./config/config');
 
 const app = express();
@@ -17,11 +18,9 @@ if (config.dev) {
   /* eslint-enable global-require,import/no-extraneous-dependencies */
 
   const compiler = webpack(webpackConfig);
+  const { publicPath } = webpackConfig.output;
 
-  app.use(webpackDevMiddleware(compiler, {
-    publicPath: webpackConfig.output.publicPath
-  }));
-
+  app.use(webpackDevMiddleware(compiler, { publicPath }));
   app.use(webpackHotMiddleware(compiler));
 }
 
@@ -34,12 +33,11 @@ appDomain.on('error', (error) => {
 // in the future we probably want to scale the images before uploading them
 app.use(bodyParser.json({ limit: '15mb' }));
 
-
-app.use('/', express.static('web', {
-  index: 'index.html'
-}));
+const options = { index: 'index.html' };
+app.use('/', express.static('web', options));
 
 app.use('/api/players', players);
 app.use('/api/scorepads', scorepads);
+app.use('/api/jank/terms', terms);
 
 app.listen(80);

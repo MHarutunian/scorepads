@@ -31,7 +31,7 @@ router.post('/', (req, res) => {
 router.delete('/:id', (req, res) => {
   scorepads.deleteById(req.params.id, (isDeleted) => {
     if (isDeleted) {
-      res.send('');
+      res.status(204).send('');
     } else {
       res.sendStatus(404);
     }

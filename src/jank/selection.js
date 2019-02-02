@@ -1,8 +1,8 @@
-import sendRequest from './utils/sendRequest';
-import getParam from './utils/getParam';
-import getPictureSrc from './utils/getPictureSrc';
-import './css/common.css';
-import './css/jank-selection.css';
+import sendRequest from '../utils/sendRequest';
+import getParam from '../utils/getParam';
+import getPictureSrc from '../utils/getPictureSrc';
+import '../css/common.css';
+import '../css/jank/selection.css';
 
 /**
  * The ID of the scorepad for which to select players.
@@ -19,7 +19,7 @@ let scorepadId;
 function createPlayerLink(player) {
   const playerLink = document.createElement('a');
   playerLink.className = 'player-link';
-  playerLink.href = `jank-pads.html?scorepad=${scorepadId}&player=${player._id}`;
+  playerLink.href = `/jank/pads.html?scorepad=${scorepadId}&player=${player._id}`;
 
   const picture = document.createElement('img');
   picture.src = getPictureSrc(player.picture);
