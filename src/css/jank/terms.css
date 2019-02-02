@@ -1,5 +1,6 @@
 .term-item {
   font-size: larger;
+  text-transform: capitalize;
 }
 
 button,
