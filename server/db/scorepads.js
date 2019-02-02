@@ -28,8 +28,8 @@ function initScorepad(scorepad, players) {
  *
  * @param {function} onResult callback that is executed with the result documents from the database
  */
-function get(onResult) {
-  scorepadModel.find({}, (scorepads) => {
+function get(game, onResult) {
+  scorepadModel.find({game}, (scorepads) => {
     dbPlayers.get((players) => {
       onResult(scorepads.map(scorepad => initScorepad(scorepad, players)));
     });
@@ -53,6 +53,7 @@ function findById(id, onResult) {
     });
   });
 }
+
 
 /**
  * Adds a scorepad to the database.
