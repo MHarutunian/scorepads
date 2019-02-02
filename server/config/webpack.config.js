@@ -5,9 +5,10 @@ module.exports = {
     doppelkopf: './src/doppelkopf.js',
     doppelkopfSchreiben: './src/doppelkopfSchreiben.js',
     index: './src/index.js',
-    jank: './src/jank.js',
-    'jank-pads': './src/jank-pads.js',
-    'jank-selection': './src/jank-selection.js',
+    '/jank/index': './src/jank/index.js',
+    '/jank/pads': './src/jank/pads.js',
+    '/jank/selection': './src/jank/selection.js',
+    '/jank/terms': './src/jank/terms.js',
     players: './src/players.js'
   },
   output: {

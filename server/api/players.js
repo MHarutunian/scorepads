@@ -95,7 +95,6 @@ router.get('/', (req, res) => {
   });
 });
 
-
 router.post('/', (req, res) => {
   if (!req.body || !req.body.name) {
     res.sendStatus(400);
@@ -139,7 +138,7 @@ router.put('/:id', (req, res) => {
 router.delete('/:id', (req, res) => {
   players.deleteById(req.params.id, (isDeleted) => {
     if (isDeleted) {
-      res.send('');
+      res.status(204).send('');
     } else {
       res.sendStatus(404);
     }

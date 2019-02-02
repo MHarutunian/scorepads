@@ -1,7 +1,7 @@
-import sendRequest from './utils/sendRequest';
-import getParam from './utils/getParam';
-import './css/common.css';
-import './css/jank-selection.css';
+import sendRequest from '../utils/sendRequest';
+import getParam from '../utils/getParam';
+import '../css/common.css';
+import '../css/jank/selection.css';
 
 /**
  * The ID of the player currently playing.
@@ -17,7 +17,7 @@ window.onload = () => {
   playerId = getParam('player');
   scorepadId = getParam('scorepad');
 
-  document.getElementById('selection-link').href = `jank-selection.html?scorepad=${scorepadId}`;
+  document.getElementById('selection-link').href = `/jank/selection.html?scorepad=${scorepadId}`;
 
   sendRequest('GET', `/api/scorepads/${scorepadId}`, (scorepad) => {
     scorepad.players.forEach((player) => {

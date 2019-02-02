@@ -9,5 +9,5 @@ const DEFAULT_PICTURE = 'user_default.png';
  * @param {string} filename the name of the picture file
  */
 export default function getPictureSrc(filename) {
-  return `./picture/${filename || DEFAULT_PICTURE}`;
+  return `/picture/${filename || DEFAULT_PICTURE}`;
 }

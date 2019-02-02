@@ -1,0 +1,21 @@
+.term-item {
+  font-size: larger;
+  text-transform: capitalize;
+}
+
+button,
+input {
+  font-size: large;
+  margin: 10px;
+}
+
+.term-delete {
+  color: red;
+  font-weight: bold;
+}
+
+.term-add {
+  color: green;
+  font-weight: bold;
+  font-size: larger;
+}
