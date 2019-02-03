@@ -19,7 +19,7 @@ let scorepadId;
 function createPlayerLink(player) {
   const playerLink = document.createElement('a');
   playerLink.className = 'player-link';
-  playerLink.href = `/jank/pads.html?scorepad=${scorepadId}&player=${player._id}`;
+  playerLink.href = `/jank/match.html?scorepad=${scorepadId}&player=${player._id}`;
 
   const picture = document.createElement('img');
   picture.src = getPictureSrc(player.picture);

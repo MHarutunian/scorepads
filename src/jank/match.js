@@ -2,7 +2,7 @@ import sendRequest from '../utils/sendRequest';
 import getParam from '../utils/getParam';
 import getPictureSrc from '../utils/getPictureSrc';
 import '../css/common.css';
-import '../css/jank/pads.css';
+import '../css/jank/match.css';
 import '../css/jank/selection.css';
 
 /**
@@ -80,7 +80,7 @@ window.onload = () => {
   sendRequest('GET', `/api/scorepads/${scorepadId}`, (scorepad) => {
     scorepad.players.forEach((player) => {
       if (player._id === playerId) {
-        const headerText = `Hallo ${player.name}, schön dass du dabei bist`;
+        const headerText = `Hallo ${player.name}, schön dass du dabei bist!`;
         document.getElementById('header').textContent = headerText;
       }
 
