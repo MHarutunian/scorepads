@@ -1,3 +1,7 @@
+.word-form fieldset {
+  border: 0;
+}
+
 .word-text {
   font-size: large;
 }

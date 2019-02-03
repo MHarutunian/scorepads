@@ -15,16 +15,24 @@ function JanKGame() {
  */
 JanKGame.prototype.addConnection = function (playerId, socket) {
   socket.onClose(() => {
+    delete this.sockets[playerId];
+
     Object.values(this.sockets).forEach((otherSocket) => {
       otherSocket.disconnect(playerId);
     });
-
-    delete this.sockets[playerId];
   });
 
   Object.keys(this.sockets).forEach((otherPlayerId) => {
     this.sockets[otherPlayerId].connect(playerId);
     socket.connect(otherPlayerId);
+  });
+
+  socket.onMessage((message) => {
+    if (message.word) {
+      Object.values(this.sockets).forEach((otherSocket) => {
+        otherSocket.send('word', { playerId, word: message.word });
+      });
+    }
   });
 
   this.sockets[playerId] = socket;

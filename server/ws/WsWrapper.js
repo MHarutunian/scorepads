@@ -10,6 +10,15 @@ function WsWrapper(socket) {
 }
 
 /**
+ * Executes a callback whenever the WebSocket receives a message.
+ *
+ * @param {function} callback the callback to execute when the socket receives a message
+ */
+WsWrapper.prototype.onMessage = function (callback) {
+  this.socket.on('message', data => callback(JSON.parse(data)));
+};
+
+/**
  * Executes a callback whenever the WebSocket is closed.
  *
  * @param {function} callback the callback to execute when the socket is closed
@@ -24,7 +33,7 @@ WsWrapper.prototype.onClose = function (callback) {
  * @param {string} playerId the ID of the player that has connected
  */
 WsWrapper.prototype.connect = function (playerId) {
-  this.send({ type: 'connect', playerId });
+  this.send('connect', playerId);
 };
 
 /**
@@ -33,7 +42,7 @@ WsWrapper.prototype.connect = function (playerId) {
  * @param {string} playerId the ID of the player that has disconnected
  */
 WsWrapper.prototype.disconnect = function (playerId) {
-  this.send({ type: 'disconnect', playerId });
+  this.send('disconnect', playerId);
 };
 
 /**
@@ -42,17 +51,18 @@ WsWrapper.prototype.disconnect = function (playerId) {
  * @param {string} message the error message to send to the client
  */
 WsWrapper.prototype.error = function (message) {
-  this.send({ type: 'error', message });
+  this.send('error', message);
 };
 
 /**
- * Sends a generic JSON message through the socket.
+ * Sends a message (as JSON) through the socket.
  *
- * @param {Object} data the data to send (as JSON) to the client
+ * @param {string} type the type of the message to send
+ * @param {string|Object} payload the payload to send to the client
  */
-WsWrapper.prototype.send = function (data) {
+WsWrapper.prototype.send = function (type, payload) {
   if (this.isConnected()) {
-    this.socket.send(JSON.stringify(data));
+    this.socket.send(JSON.stringify({ type, payload }));
   }
 };
 

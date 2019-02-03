@@ -11,9 +11,29 @@ import '../css/jank/selection.css';
 let scorepadId;
 
 /**
+ * The ID of the player that is active on this connection.
+ */
+let activePlayerId;
+
+/**
+ * The form the player uses to input words.
+ */
+let wordForm;
+
+/**
+ * The WebSocket connection that has been established with the scorepads server.
+ */
+let socket;
+
+/**
  * The map from player IDs to the corresponding table cells representing them.
  */
 const playerCells = {};
+
+/**
+ * The placeholder to use until a term/partner has been entered in the respective cell.
+ */
+const PLACEHOLDER = '???';
 
 /**
  * Adds a player to the words table.
@@ -33,19 +53,29 @@ function addPlayer(player) {
   playerCell.appendChild(picture);
   playerCell.appendChild(document.createTextNode(player.name));
 
-  const firstWord = row.insertCell();
-  firstWord.textContent = '???';
-  const secondWord = row.insertCell();
-  secondWord.textContent = '???';
-  const partner = row.insertCell();
-  partner.textContent = '???';
+  const createPlaceholder = () => {
+    const cell = row.insertCell();
+    cell.textContent = PLACEHOLDER;
+
+    return cell;
+  };
 
   playerCells[player._id] = {
     player: playerCell,
-    firstWord,
-    secondWord,
-    partner
+    firstWord: createPlaceholder(),
+    secondWord: createPlaceholder(),
+    partner: createPlaceholder()
   };
+}
+
+/**
+ * Checks whether a player has already provided his first word.
+ *
+ * @param {string} playerId the ID of the player in question
+ * @returns {boolean} has the player already provided his first word?
+ */
+function hasFirstWord(playerId) {
+  return playerCells[playerId].firstWord.textContent !== PLACEHOLDER;
 }
 
 /**
@@ -55,12 +85,26 @@ function addPlayer(player) {
  * @param {string} word the word to add for the player
  */
 function addWord(playerId, word) {
+  const { fields } = wordForm;
+
   if (playerCells[playerId]) {
-    if (playerCells[playerId].firstWord.textContent === '???') {
-      playerCells[playerId].firstWord.textContent = word;
+    const { firstWord, secondWord } = playerCells[playerId];
+
+    if (firstWord.textContent === PLACEHOLDER) {
+      firstWord.textContent = word;
     } else {
-      playerCells[playerId].secondWord.textContent = word;
+      secondWord.textContent = word;
     }
+  }
+
+  // TODO disable fields on second word
+
+  const playerIds = Object.keys(playerCells);
+
+  if (playerId === activePlayerId) {
+    fields.disabled = playerIds.some(id => !hasFirstWord(id));
+  } else if (playerIds.every(hasFirstWord)) {
+    fields.disabled = false;
   }
 }
 
@@ -100,50 +144,78 @@ function onDisconnected(playerId) {
  * @param {string} message the message received from the server
  */
 function handleMessage(message) {
-  const data = JSON.parse(message.data);
+  const { type, payload } = JSON.parse(message.data);
 
-  if (data.type === 'connect') {
-    onConnected(data.playerId);
-  } else if (data.type === 'disconnect') {
-    onDisconnected(data.playerId);
+  if (type === 'connect') {
+    onConnected(payload);
+  } else if (type === 'disconnect') {
+    onDisconnected(payload);
+  } else if (type === 'word') {
+    const { playerId, word } = payload;
+    addWord(playerId, word);
   }
 }
 
 /**
  * Connects the player with the specified ID to the server's web socket endpoint.
- *
- * @param {string} playerId the ID of the player to connect
  */
-function connectToSocket(playerId) {
-  const { host } = window.location;
-  const socket = new WebSocket(`ws://${host}/ws/scorepads/${scorepadId}?playerId=${playerId}`);
+function connectToSocket() {
+  if (socket && socket.readyState !== WebSocket.CLOSED) {
+    // there already is a non-closed connected socket
+    return;
+  }
 
-  socket.onopen = () => onConnected(playerId);
-  socket.onclose = () => onDisconnected(playerId);
+  const { host } = window.location;
+  socket = new WebSocket(`ws://${host}/ws/scorepads/${scorepadId}?playerId=${activePlayerId}`);
+
+  socket.onopen = () => {
+    onConnected(activePlayerId);
+    wordForm.fields.disabled = false;
+  };
   socket.onmessage = handleMessage;
+  socket.onclose = () => {
+    onDisconnected(activePlayerId);
+    wordForm.fields.disabled = true;
+
+    // reconnect socket to server
+    setTimeout(() => connectToSocket(activePlayerId), 5000);
+  };
   socket.onerror = (e) => {
     // TODO error handling
     console.log(`Socket Error: ${e}`); // eslint-disable-line
   };
 }
 
+/**
+ * Sends a message to the server through the connected socket.
+ *
+ * @param {Object} data the data to send to the server
+ */
+function sendMessage(data) {
+  if (socket) {
+    socket.send(JSON.stringify(data));
+  }
+}
+
 window.onload = () => {
-  const playerId = getParam('player');
+  activePlayerId = getParam('player');
   scorepadId = getParam('scorepad');
 
   document.getElementById('selection-link').href = `/jank/selection.html?scorepad=${scorepadId}`;
 
-  const form = document.getElementById('word-form');
-  form.onsubmit = (e) => {
+  wordForm = document.getElementById('word-form');
+  wordForm.onsubmit = (e) => {
     e.preventDefault();
 
-    addWord(playerId, form.word.value);
-    form.word.value = '';
+    const word = wordForm.word.value;
+    sendMessage({ word });
+
+    wordForm.word.value = '';
   };
 
   sendRequest('GET', `/api/scorepads/${scorepadId}`, (scorepad) => {
     scorepad.players.forEach((player) => {
-      if (player._id === playerId) {
+      if (player._id === activePlayerId) {
         const headerText = `Hallo ${player.name}, schön dass du dabei bist!`;
         document.getElementById('header').textContent = headerText;
       }
@@ -152,6 +224,6 @@ window.onload = () => {
     });
 
     // after all the game data has been received, connect to the server's web socket
-    connectToSocket(playerId);
+    connectToSocket();
   });
 };
