@@ -1,12 +1,16 @@
 const express = require('express');
+
+const app = express();
+require('express-ws')(app);
+
 const bodyParser = require('body-parser');
 const domain = require('domain');
 const players = require('./api/players');
 const scorepads = require('./api/scorepads');
 const terms = require('./api/jank/terms');
 const config = require('./config/config');
+const scorepadsWs = require('./ws/scorepads');
 
-const app = express();
 const appDomain = domain.create();
 
 if (config.dev) {
@@ -39,5 +43,7 @@ app.use('/', express.static('web', options));
 app.use('/api/players', players);
 app.use('/api/scorepads', scorepads);
 app.use('/api/jank/terms', terms);
+
+app.use('/ws/scorepads', scorepadsWs);
 
 app.listen(80);

@@ -41,6 +41,7 @@ function addPlayer(player) {
   partner.textContent = '???';
 
   playerCells[player._id] = {
+    player: playerCell,
     firstWord,
     secondWord,
     partner
@@ -61,6 +62,69 @@ function addWord(playerId, word) {
       playerCells[playerId].secondWord.textContent = word;
     }
   }
+}
+
+/**
+ * Handles another player connecting to this game.
+ *
+ * This will color the corresponding background `green`.
+ *
+ * @param {string} playerId the ID of the player that connected
+ */
+function onConnected(playerId) {
+  const cell = playerCells[playerId];
+
+  if (cell) {
+    cell.player.style.background = 'green';
+  }
+}
+
+/**
+ * Handles another player disconnecting from this game.
+ *
+ * This will color the corresponding background `red`.
+ *
+ * @param {string} playerId the ID of the player that disconnected
+ */
+function onDisconnected(playerId) {
+  const cell = playerCells[playerId];
+
+  if (cell) {
+    cell.player.style.background = 'red';
+  }
+}
+
+/**
+ * Handles a message received through the server's web socket.
+ *
+ * @param {string} message the message received from the server
+ */
+function handleMessage(message) {
+  const data = JSON.parse(message.data);
+
+  if (data.type === 'connect') {
+    onConnected(data.playerId);
+  } else if (data.type === 'disconnect') {
+    onDisconnected(data.playerId);
+  }
+}
+
+/**
+ * Connects the player with the specified ID to the server's web socket endpoint.
+ *
+ * @param {string} playerId the ID of the player to connect
+ */
+function connectToSocket(playerId) {
+  const { host } = window.location;
+  const socket = new WebSocket(`ws://${host}/ws/scorepads/${scorepadId}?playerId=${playerId}`);
+
+  socket.onopen = () => onConnected(playerId);
+  socket.onclose = () => onDisconnected(playerId);
+  socket.onmessage = handleMessage;
+  socket.onerror = (e) => {
+    // TODO error handling
+    console.log(`Socket Error: ${e}`); // eslint-disable-line
+  };
 }
 
 window.onload = () => {
@@ -86,5 +150,8 @@ window.onload = () => {
 
       addPlayer(player);
     });
+
+    // after all the game data has been received, connect to the server's web socket
+    connectToSocket(playerId);
   });
 };
