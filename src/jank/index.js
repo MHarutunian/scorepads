@@ -8,24 +8,26 @@ import getScorepads from '../utils/getScorepads';
 /**
  * The minimum number of players required for playing JanK.
  */
-const MIN_PLAYERS = 4; 
+const MIN_PLAYERS = 4;
 
 /**
  * The list of available players.
  */
 let players;
 
-
-/**
- * The HTML element used to display the list of scorepads.
- */
-let scorepadList; // Theoretisch brauchen wir das hier nicht als Variable, unten als lokale Variable würde es auch reichen. Ist aber auch ok so 🙂
-
 /**
  * The `PlayerSelectHelper` used to manage the player `<select>` elements.
  */
 let playerSelectHelper;
 
+/**
+ * Redirects the user to the player selection of the specified scorepad.
+ *
+ * @param {Object} scorepad the scorepad to redirect to
+ */
+function redirectToPlayerSelection(scorepad) {
+  window.location.href = `/jank/selection.html?scorepad=${scorepad._id}`;
+}
 
 /**
  * Adds a player select element to the list of players.
@@ -62,6 +64,7 @@ function addPlayerSelect() {
 
   if (playerSelectHelper.count() > MIN_PLAYERS) {
     const deleteButton = document.createElement('button');
+    deleteButton.type = 'button';
     deleteButton.textContent = 'Spieler entfernen';
     deleteButton.onclick = () => {
       selectionContainer.removeChild(container);
@@ -92,19 +95,12 @@ window.onload = () => {
   });
 
   beginButton.onclick = () => {
-    sendRequest(
-      'POST',
-      '/api/scorepads',
-      (scorepad) => {
-        window.location.href = `/jank/selection.html?scorepad=${scorepad._id}`;
-      },
-      {
-        game: 'JanK',
-        players: playerSelectHelper.selects.map(s => s.value)
-      }
-    );
+    sendRequest('POST', '/api/scorepads', redirectToPlayerSelection, {
+      game: 'JanK',
+      players: playerSelectHelper.selects.map(s => s.value)
+    });
   };
-  
-  scorepadList = document.getElementById('scorepad-list');
-  getScorepads('JanK', scorepadList, (scorepad) => {redirectToScorepad(scorepad, "jankSchreiben.html")});
+
+  const scorepadList = document.getElementById('scorepad-list');
+  getScorepads('JanK', scorepadList, redirectToPlayerSelection);
 };

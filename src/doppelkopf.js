@@ -1,5 +1,4 @@
 import sendRequest from './utils/sendRequest';
-import getPictureSrc from './utils/getPictureSrc';
 import PlayerSelectHelper from './utils/PlayerSelectHelper';
 import './css/common.css';
 import './css/doppelkopf.css';
@@ -11,13 +10,13 @@ import getScorepads from './utils/getScorepads';
 let scorepadList;
 
 /**
-   * Redirects the user to the specified scorepad.
-   *
-   * @param {Object} scorepad the scorepad to redirect the user to
-   */
-  function redirectToScorepad(scorepad, sideName) {
-    window.location.href = `${sideName}?scorepad=${scorepad._id}`;
-  }
+ * Redirects the user to the specified scorepad.
+ *
+ * @param {Object} scorepad the scorepad to redirect the user to
+ */
+function redirectToScorepad(scorepad) {
+  window.location.href = `doppelkopfSchreiben.html?scorepad=${scorepad._id}`;
+}
 
 /**
  * Creates a scorepad with the specified selected players and redirects the user to it.
@@ -57,5 +56,5 @@ window.onload = () => {
   });
 
   scorepadList = document.getElementById('scorepad-list');
-  getScorepads("Doppelkopf", scorepadList, (scorepad) => {redirectToScorepad(scorepad, "doppelkopfSchreiben.html")});
+  getScorepads('Doppelkopf', scorepadList, redirectToScorepad);
 };

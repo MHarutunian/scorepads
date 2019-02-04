@@ -17,7 +17,6 @@ router.get('/:id', (req, res) => {
   });
 });
 
-
 router.post('/', (req, res) => {
   if (!req.body || !req.body.game || !req.body.players) {
     res.sendStatus(400);
