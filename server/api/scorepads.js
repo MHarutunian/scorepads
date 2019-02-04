@@ -2,7 +2,7 @@ const router = require('express').Router();
 const scorepads = require('../db/scorepads');
 
 router.get('/', (req, res) => {
-  scorepads.get((result) => {
+  scorepads.get(req.query, (result) => {
     res.send(result);
   });
 });
@@ -16,6 +16,7 @@ router.get('/:id', (req, res) => {
     }
   });
 });
+
 
 router.post('/', (req, res) => {
   if (!req.body || !req.body.game || !req.body.players) {

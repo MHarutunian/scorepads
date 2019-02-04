@@ -3,21 +3,29 @@ import PlayerSelectHelper from '../utils/PlayerSelectHelper';
 import sendRequest from '../utils/sendRequest';
 import '../css/common.css';
 import '../css/jank/index.css';
+import getScorepads from '../utils/getScorepads';
 
 /**
  * The minimum number of players required for playing JanK.
  */
-const MIN_PLAYERS = 4;
+const MIN_PLAYERS = 4; 
 
 /**
  * The list of available players.
  */
 let players;
 
+
+/**
+ * The HTML element used to display the list of scorepads.
+ */
+let scorepadList; // Theoretisch brauchen wir das hier nicht als Variable, unten als lokale Variable würde es auch reichen. Ist aber auch ok so 🙂
+
 /**
  * The `PlayerSelectHelper` used to manage the player `<select>` elements.
  */
 let playerSelectHelper;
+
 
 /**
  * Adds a player select element to the list of players.
@@ -96,4 +104,7 @@ window.onload = () => {
       }
     );
   };
+  
+  scorepadList = document.getElementById('scorepad-list');
+  getScorepads('JanK', scorepadList, (scorepad) => {redirectToScorepad(scorepad, "jankSchreiben.html")});
 };
