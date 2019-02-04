@@ -26,10 +26,11 @@ function initScorepad(scorepad, players) {
 /**
  * Retrieves all scorepads from the database.
  *
+ * @param {Object} query contains URL query parameters (e.g. gameName)
  * @param {function} onResult callback that is executed with the result documents from the database
  */
-function get(game, onResult) {
-  scorepadModel.find({game}, (scorepads) => {
+function get(query, onResult) {
+  scorepadModel.find(query, (scorepads) => {
     dbPlayers.get((players) => {
       onResult(scorepads.map(scorepad => initScorepad(scorepad, players)));
     });

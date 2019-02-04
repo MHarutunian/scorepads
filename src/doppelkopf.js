@@ -10,7 +10,14 @@ import getScorepads from './utils/getScorepads';
  */
 let scorepadList;
 
-
+/**
+   * Redirects the user to the specified scorepad.
+   *
+   * @param {Object} scorepad the scorepad to redirect the user to
+   */
+  function redirectToScorepad(scorepad, sideName) {
+    window.location.href = `${sideName}?scorepad=${scorepad._id}`;
+  }
 
 /**
  * Creates a scorepad with the specified selected players and redirects the user to it.
@@ -37,8 +44,6 @@ function initScorepad() {
   });
 }
 
-
-
 window.onload = () => {
   sendRequest('GET', '/api/players', (players) => {
     const playerSelect = document.getElementById('player-select');
@@ -50,15 +55,6 @@ window.onload = () => {
 
     beginButton.onclick = initScorepad;
   });
-
-  /**
-   * Redirects the user to the specified scorepad.
-   *
-   * @param {Object} scorepad the scorepad to redirect the user to
-   */
-  function redirectToScorepad(scorepad, sideName) {
-    window.location.href = `${sideName}?scorepad=${scorepad._id}`;
-  }
 
   scorepadList = document.getElementById('scorepad-list');
   getScorepads("Doppelkopf", scorepadList, (scorepad) => {redirectToScorepad(scorepad, "doppelkopfSchreiben.html")});

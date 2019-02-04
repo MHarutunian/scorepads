@@ -22,6 +22,14 @@ function createPlayerElement(player) {
     return playerElement;
   }
   
+  /**
+ * Creates a scorepad as an HTML list item.
+ *
+ * @param {Object} scorepad the scorepad to create the HTML element from
+ * @param {Object} gameName the game to choose from scorepadLists
+ * @param {Object} onLoad 
+ * @return {HTMLLIElement} the HTML list item representing the scorepad
+ */
   function createScorepadElement(scorepad, gameName, onLoad) {
     const listItem = document.createElement('li');
     listItem.className = 'scorepad';
