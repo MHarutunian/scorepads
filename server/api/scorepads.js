@@ -2,7 +2,7 @@ const router = require('express').Router();
 const scorepads = require('../db/scorepads');
 
 router.get('/', (req, res) => {
-  scorepads.get((result) => {
+  scorepads.get(req.query, (result) => {
     res.send(result);
   });
 });
