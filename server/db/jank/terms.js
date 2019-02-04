@@ -12,6 +12,29 @@ function get(onResult) {
 }
 
 /**
+ * Gets a list of random terms for the specified scorepad.
+ *
+ * @param {Object} scorepad the scorepad to get terms for
+ * @param {function} onResult the callback to execute with the list of terms
+ */
+function getForScorepad(scorepad, onResult) {
+  const nrOfPlayers = scorepad.players.length;
+
+  let nrOfJokers;
+
+  if (nrOfPlayers === 4) {
+    nrOfJokers = 0;
+  } else if (nrOfPlayers % 2 === 1) {
+    nrOfJokers = 1;
+  } else {
+    nrOfJokers = Math.random() > 0.5 ? 2 : 0;
+  }
+
+  const limit = (nrOfPlayers - nrOfJokers) / 2;
+  termModel.getRandom(limit, onResult);
+}
+
+/**
  * Finds a single term by its value.
  *
  * @param {string} value the value of the term to find
@@ -65,5 +88,6 @@ function deleteById(id, onResult) {
 }
 
 exports.get = get;
+exports.getForScorepad = getForScorepad;
 exports.add = add;
 exports.deleteById = deleteById;

@@ -153,6 +153,8 @@ function handleMessage(message) {
   } else if (type === 'word') {
     const { playerId, word } = payload;
     addWord(playerId, word);
+  } else if (type === 'term') {
+    document.getElementById('term-header').textContent = payload;
   }
 }
 
@@ -217,7 +219,7 @@ window.onload = () => {
     scorepad.players.forEach((player) => {
       if (player._id === activePlayerId) {
         const headerText = `Hallo ${player.name}, schön dass du dabei bist!`;
-        document.getElementById('header').textContent = headerText;
+        document.getElementById('player-header').textContent = headerText;
       }
 
       addPlayer(player);

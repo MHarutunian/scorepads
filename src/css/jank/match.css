@@ -1,3 +1,7 @@
+.term {
+  text-transform: capitalize;
+}
+
 .word-form fieldset {
   border: 0;
 }

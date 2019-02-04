@@ -73,14 +73,35 @@ Model.prototype.findBy = function (field, value, onResult) {
  */
 Model.prototype.findOne = function (id, onResult) {
   this.withCollection((collection) => {
-    collection.findOne({
-      _id: ObjectID(id)
-    }, (error, doc) => {
+    collection.findOne(
+      {
+        _id: ObjectID(id)
+      },
+      (error, doc) => {
+        if (error) {
+          throw error;
+        }
+
+        onResult(doc);
+      }
+    );
+  });
+};
+
+/**
+ * Gets the requested number of random elements from this model's collection.
+ *
+ * @param {number} size the size of the result collection, i.e. the number of random elements to get
+ * @param {function} onResult the callback to execute with the list of random results
+ */
+Model.prototype.getRandom = function (size, onResult) {
+  this.withCollection((collection) => {
+    collection.aggregate([{ $sample: { size } }]).toArray((error, result) => {
       if (error) {
         throw error;
       }
 
-      onResult(doc);
+      onResult(result);
     });
   });
 };
@@ -112,17 +133,21 @@ Model.prototype.insertOne = function (doc, onResult) {
  */
 Model.prototype.updateOne = function (id, update, onResult) {
   this.withCollection((collection) => {
-    collection.updateOne({
-      _id: ObjectID(id)
-    }, {
-      $set: update
-    }, (error, result) => {
-      if (error) {
-        throw error;
-      }
+    collection.updateOne(
+      {
+        _id: ObjectID(id)
+      },
+      {
+        $set: update
+      },
+      (error, result) => {
+        if (error) {
+          throw error;
+        }
 
-      onResult(result.result.n > 0);
-    });
+        onResult(result.result.n > 0);
+      }
+    );
   });
 };
 
@@ -134,15 +159,18 @@ Model.prototype.updateOne = function (id, update, onResult) {
  */
 Model.prototype.deleteOne = function (id, onResult) {
   this.withCollection((collection) => {
-    collection.deleteOne({
-      _id: ObjectID(id)
-    }, (error, result) => {
-      if (error) {
-        throw error;
-      }
+    collection.deleteOne(
+      {
+        _id: ObjectID(id)
+      },
+      (error, result) => {
+        if (error) {
+          throw error;
+        }
 
-      onResult(result.deletedCount > 0);
-    });
+        onResult(result.deletedCount > 0);
+      }
+    );
   });
 };
 
