@@ -16,9 +16,7 @@ const scorepadModel = new Model('scorepads');
 function initScorepad(scorepad, players) {
   return {
     ...scorepad,
-    players: scorepad.players.map(id => (
-      players.find(player => player._id.equals(id))
-    )),
+    players: scorepad.players.map(id => players.find(player => player._id.equals(id))),
     created_at: scorepad._id.getTimestamp()
   };
 }
@@ -26,10 +24,11 @@ function initScorepad(scorepad, players) {
 /**
  * Retrieves all scorepads from the database.
  *
+ * @param {Object} query contains URL query parameters (e.g. gameName)
  * @param {function} onResult callback that is executed with the result documents from the database
  */
-function get(onResult) {
-  scorepadModel.find({}, (scorepads) => {
+function get(query, onResult) {
+  scorepadModel.find(query, (scorepads) => {
     dbPlayers.get((players) => {
       onResult(scorepads.map(scorepad => initScorepad(scorepad, players)));
     });
@@ -62,11 +61,14 @@ function findById(id, onResult) {
  * @param {function} onResult callback that is executed with the scorepad that was added
  */
 function add(game, players, onResult) {
-  scorepadModel.insertOne({
-    game,
-    players,
-    matches: []
-  }, onResult);
+  scorepadModel.insertOne(
+    {
+      game,
+      players,
+      matches: []
+    },
+    onResult
+  );
 }
 
 /**
@@ -94,22 +96,26 @@ function addMatch(id, match, onResult) {
     };
 
     scorepadModel.withCollection((collection) => {
-      collection.updateOne({
-        _id: scorepad._id
-      }, {
-        $push: {
-          matches: {
-            ...match,
-            ...update
+      collection.updateOne(
+        {
+          _id: scorepad._id
+        },
+        {
+          $push: {
+            matches: {
+              ...match,
+              ...update
+            }
           }
-        }
-      }, (error) => {
-        if (error) {
-          throw error;
-        }
+        },
+        (error) => {
+          if (error) {
+            throw error;
+          }
 
-        onResult(update);
-      });
+          onResult(update);
+        }
+      );
     });
   });
 }
@@ -131,21 +137,25 @@ function updateMatch(scorepadId, matchId, match, onResult) {
     });
 
     scorepadModel.withCollection((collection) => {
-      collection.updateOne({
-        _id: scorepad._id,
-        'matches._id': ObjectID(matchId)
-      }, {
-        $set: {
-          ...update,
-          'matches.$.score': score
-        }
-      }, (error) => {
-        if (error) {
-          throw error;
-        }
+      collection.updateOne(
+        {
+          _id: scorepad._id,
+          'matches._id': ObjectID(matchId)
+        },
+        {
+          $set: {
+            ...update,
+            'matches.$.score': score
+          }
+        },
+        (error) => {
+          if (error) {
+            throw error;
+          }
 
-        onResult(score);
-      });
+          onResult(score);
+        }
+      );
     });
   });
 }

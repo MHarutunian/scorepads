@@ -31,6 +31,7 @@ function addTerm(term) {
   termItem.textContent = term.value;
 
   const deleteButton = document.createElement('button');
+  deleteButton.type = 'button';
   deleteButton.className = 'term-delete';
   deleteButton.textContent = 'X';
   deleteButton.onclick = () => sendRequest('DELETE', `${API_URL}/${term._id}`, () => {
