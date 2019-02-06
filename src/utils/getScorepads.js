@@ -33,11 +33,6 @@ function addScorepad(scorepad, scorepadList, onLoad) {
   const listItem = document.createElement('li');
   listItem.className = 'scorepad';
 
-  const game = document.createElement('span');
-  game.className = 'game';
-  game.appendChild(document.createTextNode(scorepad.game));
-  listItem.appendChild(game);
-
   scorepad.players.forEach((player) => {
     listItem.appendChild(createPlayerElement(player));
   });

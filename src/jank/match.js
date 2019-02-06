@@ -1,14 +1,15 @@
-import sendRequest from '../utils/sendRequest';
 import getParam from '../utils/getParam';
 import getPictureSrc from '../utils/getPictureSrc';
+import PlayerSelectHelper from '../utils/PlayerSelectHelper';
+import sendRequest from '../utils/sendRequest';
 import '../css/common.css';
 import '../css/jank/match.css';
 import '../css/jank/selection.css';
 
 /**
- * The ID of the currently loaded scorepad.
+ * The scorepad of the currently active game.
  */
-let scorepadId;
+let scorepad;
 
 /**
  * The ID of the player that is active on this connection.
@@ -21,6 +22,11 @@ let activePlayerId;
 let wordForm;
 
 /**
+ * The form the player uses to input bets.
+ */
+let betsForm;
+
+/**
  * The WebSocket connection that has been established with the scorepads server.
  */
 let socket;
@@ -31,11 +37,6 @@ let socket;
 const playerCells = {};
 
 /**
- * The placeholder to use until a term/partner has been entered in the respective cell.
- */
-const PLACEHOLDER = '???';
-
-/**
  * Adds a player to the words table.
  *
  * This will store the respective cells to the `playerCells` object.
@@ -43,7 +44,7 @@ const PLACEHOLDER = '???';
  * @param {Object} player the player to add
  */
 function addPlayer(player) {
-  const table = document.getElementById('word-table');
+  const table = document.getElementById('match-table');
   const row = table.insertRow();
 
   const playerCell = row.insertCell();
@@ -55,7 +56,7 @@ function addPlayer(player) {
 
   const createPlaceholder = () => {
     const cell = row.insertCell();
-    cell.textContent = PLACEHOLDER;
+    cell.textContent = '???';
 
     return cell;
   };
@@ -64,48 +65,45 @@ function addPlayer(player) {
     player: playerCell,
     firstWord: createPlaceholder(),
     secondWord: createPlaceholder(),
-    partner: createPlaceholder()
+    term: createPlaceholder()
   };
 }
 
 /**
- * Checks whether a player has already provided his first word.
+ * Adds a word to the cell of the specified player in the specified round.
  *
- * @param {string} playerId the ID of the player in question
- * @returns {boolean} has the player already provided his first word?
- */
-function hasFirstWord(playerId) {
-  return playerCells[playerId].firstWord.textContent !== PLACEHOLDER;
-}
-
-/**
- * Adds a word to the corresponding cell of the specified player.
- *
+ * @param {int} round the round index to add the word to
  * @param {string} playerId the ID of the player to add the word for
  * @param {string} word the word to add for the player
  */
-function addWord(playerId, word) {
-  const { fields } = wordForm;
+function addWord(round, playerId, word) {
+  if (playerId === activePlayerId) {
+    wordForm.fields.disabled = true;
+  }
 
   if (playerCells[playerId]) {
     const { firstWord, secondWord } = playerCells[playerId];
 
-    if (firstWord.textContent === PLACEHOLDER) {
+    if (round === 0) {
       firstWord.textContent = word;
     } else {
       secondWord.textContent = word;
     }
   }
+}
 
-  // TODO disable fields on second word
+/**
+ * Adds a bet with the two specified players.
+ *
+ * @param {Array} param0 the bet to add (i.e. the IDs of the paired players)
+ */
+function addBet([playerIdA, playerIdB]) {
+  const playerA = scorepad.players.find(p => p._id === playerIdA);
+  const playerB = scorepad.players.find(p => p._id === playerIdB);
 
-  const playerIds = Object.keys(playerCells);
-
-  if (playerId === activePlayerId) {
-    fields.disabled = playerIds.some(id => !hasFirstWord(id));
-  } else if (playerIds.every(hasFirstWord)) {
-    fields.disabled = false;
-  }
+  const betItem = document.createElement('li');
+  betItem.textContent = `${playerA.name} und ${playerB.name}`;
+  document.getElementById('bets-list').appendChild(betItem);
 }
 
 /**
@@ -139,6 +137,27 @@ function onDisconnected(playerId) {
 }
 
 /**
+ * Handles a state change that was pushed from the server.
+ *
+ * @param {string} state the new state
+ */
+function onStateChanged(state) {
+  switch (state) {
+    case 'WORDS':
+      wordForm.fields.disabled = false;
+      break;
+    case 'BETS':
+      betsForm.fields.disabled = false;
+      break;
+    case 'PAYOUT':
+    default:
+      wordForm.fields.disabled = true;
+      betsForm.fields.disabled = true;
+      break;
+  }
+}
+
+/**
  * Handles a message received through the server's web socket.
  *
  * @param {string} message the message received from the server
@@ -146,15 +165,42 @@ function onDisconnected(playerId) {
 function handleMessage(message) {
   const { type, payload } = JSON.parse(message.data);
 
-  if (type === 'connect') {
-    onConnected(payload);
-  } else if (type === 'disconnect') {
-    onDisconnected(payload);
-  } else if (type === 'word') {
-    const { playerId, word } = payload;
-    addWord(playerId, word);
-  } else if (type === 'term') {
-    document.getElementById('term-header').textContent = payload;
+  switch (type) {
+    case 'connect':
+      onConnected(payload);
+      break;
+    case 'disconnect':
+      onDisconnected(payload);
+      break;
+    case 'state':
+      onStateChanged(payload);
+      break;
+    case 'term':
+      document.getElementById('term-header').textContent = payload;
+      playerCells[activePlayerId].term.textContent = payload;
+      break;
+    case 'word': {
+      const { round, playerId, word } = payload;
+      addWord(round, playerId, word);
+      break;
+    }
+    case 'bet': {
+      const { playerId, bet } = payload;
+      if (playerId === activePlayerId) {
+        addBet(bet);
+      }
+      break;
+    }
+    case 'payout': {
+      const { terms } = payload;
+      Object.keys(terms).forEach((playerId) => {
+        playerCells[playerId].term.textContent = terms[playerId].value;
+      });
+      break;
+    }
+    default:
+      console.log(`UNKNOWN MESSAGE TYPE: ${type}`);
+      break;
   }
 }
 
@@ -168,16 +214,14 @@ function connectToSocket() {
   }
 
   const { host } = window.location;
-  socket = new WebSocket(`ws://${host}/ws/scorepads/${scorepadId}?playerId=${activePlayerId}`);
+  socket = new WebSocket(`ws://${host}/ws/scorepads/${scorepad._id}?playerId=${activePlayerId}`);
 
   socket.onopen = () => {
     onConnected(activePlayerId);
-    wordForm.fields.disabled = false;
   };
   socket.onmessage = handleMessage;
   socket.onclose = () => {
     onDisconnected(activePlayerId);
-    wordForm.fields.disabled = true;
 
     // reconnect socket to server
     setTimeout(() => connectToSocket(activePlayerId), 5000);
@@ -191,41 +235,74 @@ function connectToSocket() {
 /**
  * Sends a message to the server through the connected socket.
  *
- * @param {Object} data the data to send to the server
+ * @param {string} type the type of the message to send to the server
+ * @param {string|Array|Object} data the data to send to the server
  */
-function sendMessage(data) {
+function sendMessage(type, payload) {
   if (socket) {
+    const data = { type, payload };
     socket.send(JSON.stringify(data));
   }
 }
 
-window.onload = () => {
-  activePlayerId = getParam('player');
-  scorepadId = getParam('scorepad');
+/**
+ * Initializes the game, including headers, forms and socket communication.
+ */
+function initGame() {
+  scorepad.players.forEach((player) => {
+    if (player._id === activePlayerId) {
+      const headerText = `Hallo ${player.name}, schön dass du dabei bist!`;
+      document.getElementById('player-header').textContent = headerText;
+    }
 
-  document.getElementById('selection-link').href = `/jank/selection.html?scorepad=${scorepadId}`;
+    addPlayer(player);
+  });
 
-  wordForm = document.getElementById('word-form');
+  const betsButton = document.getElementById('bets-button');
+  const playerSelectHelper = new PlayerSelectHelper(scorepad.players, betsButton);
+  playerSelectHelper.addAll(Array.from(betsForm.getElementsByTagName('select')));
+
   wordForm.onsubmit = (e) => {
     e.preventDefault();
 
     const word = wordForm.word.value;
-    sendMessage({ word });
-
-    wordForm.word.value = '';
+    if (word) {
+      sendMessage('word', word);
+      wordForm.reset();
+    }
   };
 
-  sendRequest('GET', `/api/scorepads/${scorepadId}`, (scorepad) => {
-    scorepad.players.forEach((player) => {
-      if (player._id === activePlayerId) {
-        const headerText = `Hallo ${player.name}, schön dass du dabei bist!`;
-        document.getElementById('player-header').textContent = headerText;
-      }
+  betsForm.onsubmit = (e) => {
+    e.preventDefault();
 
-      addPlayer(player);
-    });
+    const { first, second, fields } = betsForm;
+    const playerA = first.value;
+    const playerB = second.value;
 
-    // after all the game data has been received, connect to the server's web socket
-    connectToSocket();
+    if (playerA && playerB) {
+      const bet = [playerA, playerB];
+      addBet(bet);
+      sendMessage('bet', bet);
+
+      playerSelectHelper.reset();
+      fields.disabled = true;
+    }
+  };
+
+  // after all the game data has been received, connect to the server's web socket
+  connectToSocket();
+}
+
+window.onload = () => {
+  activePlayerId = getParam('player');
+  const scorepadId = getParam('scorepad');
+
+  document.getElementById('selection-link').href = `/jank/selection.html?scorepad=${scorepadId}`;
+  wordForm = document.getElementById('word-form');
+  betsForm = document.getElementById('bets-form');
+
+  sendRequest('GET', `/api/scorepads/${scorepadId}`, (result) => {
+    scorepad = result;
+    initGame();
   });
 };

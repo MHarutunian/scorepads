@@ -102,4 +102,22 @@ PlayerSelectHelper.prototype.checkOptions = function () {
   });
 };
 
+/**
+ * Resets the select elements and enables all the options again.
+ *
+ * The action button will be disabled.
+ */
+PlayerSelectHelper.prototype.reset = function () {
+  /* eslint-disable no-param-reassign */
+  this.selects.forEach((select) => {
+    select.selectedIndex = -1;
+
+    Array.from(select.options).forEach((option) => {
+      option.disabled = false;
+    });
+  });
+
+  this.actionButton.disabled = true;
+};
+
 export default PlayerSelectHelper;

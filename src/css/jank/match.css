@@ -2,26 +2,27 @@
   text-transform: capitalize;
 }
 
-.word-form fieldset {
+.match-form fieldset {
   border: 0;
 }
 
-.word-text {
+.match-text {
   font-size: large;
 }
 
-.word-table {
+.match-table {
   border-collapse: collapse;
   margin-top: 20px;
   width: 100%;
 }
 
-.word-table td,
-.word-table th {
+.match-table td,
+.match-table th {
   border: 2px solid black;
   margin: 0;
   padding: 10px 15px;
   text-align: center;
+  text-transform: capitalize;
 }
 
 .player-picture {
