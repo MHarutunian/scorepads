@@ -61,12 +61,35 @@ function addPlayer(player) {
     return cell;
   };
 
+  const firstWord = createPlaceholder();
+  const secondWord = createPlaceholder();
+  const term = createPlaceholder();
+  const scoreCell = row.insertCell();
+  scoreCell.textContent = '0';
+
   playerCells[player._id] = {
     player: playerCell,
-    firstWord: createPlaceholder(),
-    secondWord: createPlaceholder(),
-    term: createPlaceholder()
+    firstWord,
+    secondWord,
+    term,
+    score: {
+      cell: scoreCell,
+      value: 0
+    }
   };
+}
+
+/**
+ * Updates the score of each player using the specifiec score map.
+ *
+ * @param {Object} scoreMap the map from player IDs to each player's respective score
+ */
+function updateScores(scoreMap) {
+  Object.keys(scoreMap).forEach((playerId) => {
+    const { score } = playerCells[playerId];
+    score.value += scoreMap[playerId];
+    score.cell.textContent = score.value;
+  });
 }
 
 /**
@@ -192,7 +215,8 @@ function handleMessage(message) {
       break;
     }
     case 'payout': {
-      const { terms } = payload;
+      const { scoreMap, terms } = payload;
+      updateScores(scoreMap);
       Object.keys(terms).forEach((playerId) => {
         playerCells[playerId].term.textContent = terms[playerId].value;
       });
@@ -256,6 +280,9 @@ function initGame() {
     }
 
     addPlayer(player);
+  });
+  scorepad.matches.forEach(({ score }) => {
+    updateScores(score);
   });
 
   const betsButton = document.getElementById('bets-button');

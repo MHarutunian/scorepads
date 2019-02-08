@@ -1,9 +1,6 @@
-const dbTerms = require('../db/jank/terms');
-
-/**
- * The term used for joker players.
- */
-const JOKER_TERM = '?JOKER?';
+const scorepads = require('../../db/scorepads');
+const dbTerms = require('../../db/jank/terms');
+const { JOKER_TERM } = require('./constants');
 
 /**
  * Creates a new JanK game that several players can connect to through web sockets.
@@ -140,7 +137,9 @@ JanKGame.prototype.addMessageHandler = function (playerId) {
           };
         } else {
           this.currentMatch.state = 'PAYOUT';
-          this.broadcastPayout();
+          scorepads.addMatch(this.scorepad._id, this.currentMatch, ({ score }) => {
+            this.broadcastPayout(score);
+          });
         }
 
         this.broadcastState();
@@ -204,11 +203,13 @@ JanKGame.prototype.sendState = function (socket) {
 };
 
 /**
- * Broadcasts the payout to all connected players.
+ * Broadcasts the payout of the current match to all connected players.
+ *
+ * @param {Object} scoreMap the map from playerIds to the respective score updates
  */
-JanKGame.prototype.broadcastPayout = function () {
+JanKGame.prototype.broadcastPayout = function (scoreMap) {
   Object.values(this.sockets).forEach((socket) => {
-    socket.send('payout', { terms: this.currentMatch.terms });
+    socket.send('payout', { terms: this.currentMatch.terms, scoreMap });
   });
 };
 

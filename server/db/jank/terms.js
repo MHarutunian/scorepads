@@ -31,7 +31,15 @@ function getForScorepad(scorepad, onResult) {
   }
 
   const limit = (nrOfPlayers - nrOfJokers) / 2;
-  termModel.getRandom(limit, onResult);
+  const usedTerms = [];
+  scorepad.matches.forEach((match) => {
+    Object.values(match.terms).forEach((term) => {
+      usedTerms.push(term.value);
+    });
+  });
+
+  // only select terms at random that haven't been used in this scorepad
+  termModel.getRandom({ value: { $nin: usedTerms } }, limit, onResult);
 }
 
 /**

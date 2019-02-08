@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const WsWrapper = require('./WsWrapper');
 const scorepads = require('../db/scorepads');
-const JanKGame = require('../game/JanKGame');
+const JanKGame = require('../game/jank/JanKGame');
 
 /**
  * Dictionary of games that are currently active.
