@@ -37,6 +37,11 @@ let socket;
 const playerCells = {};
 
 /**
+ * Placeholder used in cells until their actual content is revealed.
+ */
+const PLACEHOLDER = '???';
+
+/**
  * Adds a player to the words table.
  *
  * This will store the respective cells to the `playerCells` object.
@@ -56,7 +61,7 @@ function addPlayer(player) {
 
   const createPlaceholder = () => {
     const cell = row.insertCell();
-    cell.textContent = '???';
+    cell.textContent = PLACEHOLDER;
 
     return cell;
   };
@@ -90,6 +95,25 @@ function updateScores(scoreMap) {
     score.value += scoreMap[playerId];
     score.cell.textContent = score.value;
   });
+}
+
+/**
+ * Resets all player cells to placeholder values, except the player name and score.
+ *
+ * This will also clear the list of bets for the active player.
+ */
+function resetCells() {
+  Object.keys(playerCells).forEach((playerId) => {
+    const { firstWord, secondWord, term } = playerCells[playerId];
+    firstWord.textContent = PLACEHOLDER;
+    secondWord.textContent = PLACEHOLDER;
+    term.textContent = PLACEHOLDER;
+  });
+
+  const betList = document.getElementById('bets-list');
+  while (betList.firstChild) {
+    betList.removeChild(betList.firstChild);
+  }
 }
 
 /**
@@ -165,17 +189,22 @@ function onDisconnected(playerId) {
  * @param {string} state the new state
  */
 function onStateChanged(state) {
+  const nextButton = document.getElementById('next');
+
   switch (state) {
     case 'WORDS':
       wordForm.fields.disabled = false;
+      nextButton.disabled = true;
       break;
     case 'BETS':
       betsForm.fields.disabled = false;
+      nextButton.disabled = true;
       break;
     case 'PAYOUT':
     default:
       wordForm.fields.disabled = true;
       betsForm.fields.disabled = true;
+      nextButton.disabled = false;
       break;
   }
 }
@@ -220,8 +249,12 @@ function handleMessage(message) {
       Object.keys(terms).forEach((playerId) => {
         playerCells[playerId].term.textContent = terms[playerId].value;
       });
+
       break;
     }
+    case 'reset':
+      resetCells();
+      break;
     default:
       console.log(`UNKNOWN MESSAGE TYPE: ${type}`);
       break;
@@ -260,11 +293,16 @@ function connectToSocket() {
  * Sends a message to the server through the connected socket.
  *
  * @param {string} type the type of the message to send to the server
- * @param {string|Array|Object} data the data to send to the server
+ * @param {string|Array|Object} [payload=null] the payload to send to the server
  */
-function sendMessage(type, payload) {
+function sendMessage(type, payload = null) {
   if (socket) {
-    const data = { type, payload };
+    const data = { type };
+
+    if (payload) {
+      data.payload = payload;
+    }
+
     socket.send(JSON.stringify(data));
   }
 }
@@ -332,4 +370,6 @@ window.onload = () => {
     scorepad = result;
     initGame();
   });
+
+  document.getElementById('next').onclick = () => sendMessage('new');
 };

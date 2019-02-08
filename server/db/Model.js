@@ -92,7 +92,7 @@ Model.prototype.findOne = function (id, onResult) {
  * Gets the requested number of random documents from this model's collection.
  *
  * @param {Object} query the query to preselect documents before choosing a random number
- * @param {number} size the size of the result collection, i.e. the number of random documents to get
+ * @param {number} size size of the result collection, i.e. the number of random documents to get
  * @param {function} onResult the callback to execute with the list of random results
  */
 Model.prototype.getRandom = function (query, size, onResult) {

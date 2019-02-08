@@ -137,13 +137,21 @@ JanKGame.prototype.addMessageHandler = function (playerId) {
           };
         } else {
           this.currentMatch.state = 'PAYOUT';
-          scorepads.addMatch(this.scorepad._id, this.currentMatch, ({ score }) => {
-            this.broadcastPayout(score);
+          scorepads.addMatch(this.scorepad._id, this.currentMatch, (match) => {
+            this.scorepad.matches.push({
+              ...this.currentMatch,
+              ...match
+            });
+            this.broadcastPayout(match.score);
           });
         }
 
         this.broadcastState();
       }
+    } else if (type === 'new') {
+      Object.values(this.sockets).forEach(otherSocket => otherSocket.send('reset'));
+      this.currentMatch = null;
+      this.initNewMatch();
     }
   });
 };
