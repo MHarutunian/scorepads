@@ -1,6 +1,7 @@
 .nav-header {
   display: flex;
   margin: 10px 0;
+  align-items: center;
 }
 
 .nav-header a {
@@ -8,6 +9,10 @@
   padding: 10px;
   background-color: #f4bc42;
   border-radius: 15px;
+}
+
+.nav-img {
+  width: 100px;
 }
 
 .player {

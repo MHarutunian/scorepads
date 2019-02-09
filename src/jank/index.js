@@ -2,6 +2,7 @@ import getPictureSrc from '../utils/getPictureSrc';
 import PlayerSelectHelper from '../utils/PlayerSelectHelper';
 import sendRequest from '../utils/sendRequest';
 import '../css/common.css';
+import '../css/jank/common.css';
 import '../css/jank/index.css';
 import getScorepads from '../utils/getScorepads';
 
