@@ -42,6 +42,16 @@ const playerCells = {};
 const PLACEHOLDER = '???';
 
 /**
+ * The list of gifs to choose from when winning a match.
+ */
+const WIN_GIFS = ['yay.gif', 'goal.gif'];
+
+/**
+ * The list of gifs to choose from when losing a match.
+ */
+const LOSE_GIFS = ['srs.gif'];
+
+/**
  * Adds a player to the words table.
  *
  * This will store the respective cells to the `playerCells` object.
@@ -82,6 +92,44 @@ function addPlayer(player) {
       value: 0
     }
   };
+}
+
+/**
+ * Shows the score to the active player along with an appropriate reaction gif.
+ *
+ * @param {number} score the score the player got for the current match
+ */
+function showScoreAndReaction(score) {
+  let gifs;
+  let scoreClass;
+
+  if (score > 0) {
+    scoreClass = 'score-positive';
+    gifs = WIN_GIFS;
+  } else if (score < 0) {
+    scoreClass = 'score-negative';
+    gifs = LOSE_GIFS;
+  } else {
+    scoreClass = 'score-zero';
+    gifs = LOSE_GIFS;
+  }
+
+  const gifSrc = gifs[Math.floor(Math.random() * gifs.length)];
+
+  const scoreItem = document.createElement('li');
+  scoreItem.appendChild(document.createTextNode('Deine Punkte diese Runde: '));
+
+  const scoreSpan = document.createElement('span');
+  scoreSpan.className = `score ${scoreClass}`;
+  scoreSpan.textContent = score;
+  scoreItem.appendChild(scoreSpan);
+
+  const scoreGif = document.createElement('img');
+  scoreGif.className = 'score-gif';
+  scoreGif.src = `/jank/img/${gifSrc}`;
+  scoreItem.appendChild(scoreGif);
+
+  document.getElementById('bets-list').appendChild(scoreItem);
 }
 
 /**
@@ -149,6 +197,7 @@ function addBet([playerIdA, playerIdB]) {
   const playerB = scorepad.players.find(p => p._id === playerIdB);
 
   const betItem = document.createElement('li');
+  betItem.className = 'match-text';
   betItem.textContent = `${playerA.name} und ${playerB.name}`;
   document.getElementById('bets-list').appendChild(betItem);
 }
@@ -246,10 +295,11 @@ function handleMessage(message) {
     case 'payout': {
       const { scoreMap, terms } = payload;
       updateScores(scoreMap);
+      showScoreAndReaction(scoreMap[activePlayerId]);
+
       Object.keys(terms).forEach((playerId) => {
         playerCells[playerId].term.textContent = terms[playerId].value;
       });
-
       break;
     }
     case 'reset':

@@ -28,3 +28,25 @@
 .player-picture {
   vertical-align: middle;
 }
+
+.score {
+  font-weight: bold;
+}
+
+.score-positive {
+  color: green;
+}
+
+.score-negative {
+  color: red;
+}
+
+.score-zero {
+  color: black;
+}
+
+.score-gif {
+  margin-left: 25px;
+  vertical-align: middle;
+  width: 200px;
+}
