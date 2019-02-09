@@ -135,14 +135,15 @@ JanKGame.prototype.addMessageHandler = function (playerId) {
             round: 1,
             state: 'WORDS'
           };
-        } else {
+        } else if (this.currentMatch !== 'PAYOUT') {
           this.currentMatch.state = 'PAYOUT';
           scorepads.addMatch(this.scorepad._id, this.currentMatch, (match) => {
-            this.scorepad.matches.push({
+            this.currentMatch = {
               ...this.currentMatch,
               ...match
-            });
-            this.broadcastPayout(match.score);
+            };
+            this.scorepad.matches.push(this.currentMatch);
+            this.broadcastPayout();
           });
         }
 
@@ -178,7 +179,7 @@ JanKGame.prototype.sendInitialState = function (id) {
   const { state, terms, rounds } = this.currentMatch;
 
   if (state === 'PAYOUT') {
-    socket.send('payout', { terms });
+    this.sendPayout(socket);
   } else if (id in terms) {
     socket.send('term', terms[id].value);
   }
@@ -212,13 +213,19 @@ JanKGame.prototype.sendState = function (socket) {
 
 /**
  * Broadcasts the payout of the current match to all connected players.
- *
- * @param {Object} scoreMap the map from playerIds to the respective score updates
  */
-JanKGame.prototype.broadcastPayout = function (scoreMap) {
-  Object.values(this.sockets).forEach((socket) => {
-    socket.send('payout', { terms: this.currentMatch.terms, scoreMap });
-  });
+JanKGame.prototype.broadcastPayout = function () {
+  Object.values(this.sockets).forEach(socket => this.sendPayout(socket));
+};
+
+/**
+ * Sends the payout of the current match to the specified socket.
+ *
+ * @param {WsWrapper} socket the socket to send the payout to
+ */
+JanKGame.prototype.sendPayout = function (socket) {
+  const { terms, score } = this.currentMatch;
+  socket.send('payout', { terms, scoreMap: score });
 };
 
 /**

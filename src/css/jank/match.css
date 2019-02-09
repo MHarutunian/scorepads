@@ -1,5 +1,15 @@
+.match-container {
+  background-image: url("/jank/img/background.png");
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
 .term {
   text-transform: capitalize;
+}
+
+.header {
+  margin: 5px;
 }
 
 .match-form fieldset {
@@ -23,6 +33,10 @@
   padding: 10px 15px;
   text-align: center;
   text-transform: capitalize;
+}
+
+.match-row {
+  display: flex;
 }
 
 .player-picture {

@@ -44,7 +44,7 @@ const PLACEHOLDER = '???';
 /**
  * The list of gifs to choose from when winning a match.
  */
-const WIN_GIFS = ['yay.gif', 'goal.gif'];
+const WIN_GIFS = ['yay.gif', 'goal.gif', 'party.gif'];
 
 /**
  * The list of gifs to choose from when losing a match.
@@ -117,19 +117,19 @@ function showScoreAndReaction(score) {
   const gifSrc = gifs[Math.floor(Math.random() * gifs.length)];
 
   const scoreItem = document.createElement('li');
+  scoreItem.className = 'match-text';
   scoreItem.appendChild(document.createTextNode('Deine Punkte diese Runde: '));
 
   const scoreSpan = document.createElement('span');
   scoreSpan.className = `score ${scoreClass}`;
   scoreSpan.textContent = score;
   scoreItem.appendChild(scoreSpan);
+  document.getElementById('bets-list').appendChild(scoreItem);
 
   const scoreGif = document.createElement('img');
   scoreGif.className = 'score-gif';
   scoreGif.src = `/jank/img/${gifSrc}`;
-  scoreItem.appendChild(scoreGif);
-
-  document.getElementById('bets-list').appendChild(scoreItem);
+  document.getElementById('gif-container').appendChild(scoreGif);
 }
 
 /**
@@ -161,6 +161,11 @@ function resetCells() {
   const betList = document.getElementById('bets-list');
   while (betList.firstChild) {
     betList.removeChild(betList.firstChild);
+  }
+
+  const gifContainer = document.getElementById('gif-container');
+  while (gifContainer.firstChild) {
+    gifContainer.removeChild(gifContainer.firstChild);
   }
 }
 
@@ -363,7 +368,7 @@ function sendMessage(type, payload = null) {
 function initGame() {
   scorepad.players.forEach((player) => {
     if (player._id === activePlayerId) {
-      const headerText = `Hallo ${player.name}, schön dass du dabei bist!`;
+      const headerText = `Hallo ${player.name}!`;
       document.getElementById('player-header').textContent = headerText;
     }
 
@@ -408,6 +413,20 @@ function initGame() {
   connectToSocket();
 }
 
+/**
+ * Resizes the document's body as well as the container holding all of the match's elements.
+ */
+function resizeContainer() {
+  const { documentElement, body } = document;
+  const width = window.innerWidth || documentElement.clientWidth || body.clientWidth;
+  const scale = width / 768;
+  const scalePx = value => `${Math.floor(value * scale)}px`;
+  document.body.style = `height: ${scalePx(1024)};`;
+
+  const container = document.getElementById('sheet-container');
+  container.style = `padding: ${scalePx(200)} ${scalePx(135)} 0 ${scalePx(130)}`;
+}
+
 window.onload = () => {
   activePlayerId = getParam('player');
   const scorepadId = getParam('scorepad');
@@ -422,4 +441,7 @@ window.onload = () => {
   });
 
   document.getElementById('next').onclick = () => sendMessage('new');
+
+  resizeContainer();
+  window.onresize = resizeContainer;
 };
