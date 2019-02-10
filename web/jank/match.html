@@ -6,45 +6,61 @@
     </title>
     <script type="text/javascript" src="/js/jank/match.js"></script>
   </head>
-  <body>
+  <body class="match-container">
     <div class="nav-header">
       <a href="/">Zurück zur Startseite</a>
       <a id="selection-link" href="/">Zurück zur Spielerauswahl</a>
     </div>
-    <h1 id="player-header"></h1>
-    <h2>
-      Dein Begriff diese Runde lautet:
-      <span id="term-header" class="term"></span>
-    </h2>
-    <form id="word-form" class="match-form match-text">
-      <fieldset name="fields" disabled>
-        <label for="word">Was ist dein nächstes Wort?</label>
-        <input class="match-text" name="word" />
-        <button class="match-text" type="submit">abschicken</button>
-      </fieldset>
-    </form>
-    <table id="match-table" class="match-table match-text">
-      <tr>
-        <th>Spieler</th>
-        <th>1. Wort</th>
-        <th>2. Wort</th>
-        <th>Begriff</th>
-        <th>Punkte</th>
-      </tr>
-    </table>
+    <div id="sheet-container">
+      <h1 class="header" id="player-header"></h1>
+      <h2 class="header">
+        Dein Begriff diese Runde lautet:
+        <span id="term-header" class="term"></span>
+      </h2>
+      <form id="word-form" class="match-form match-text">
+        <fieldset name="fields" disabled>
+          <label for="word">
+            Welches Wort möchtest Du als nächstes mit den anderen teilen?
+          </label>
+          <div>
+            <input class="match-text" name="word" />
+            <button class="match-text" type="submit">abschicken</button>
+          </div>
+        </fieldset>
+      </form>
+      <table id="match-table" class="match-table match-text">
+        <tr>
+          <th>Spieler</th>
+          <th>1. Wort</th>
+          <th>2. Wort</th>
+          <th>Begriff</th>
+          <th>Punkte</th>
+        </tr>
+      </table>
 
-    <h2>Hier wird geraten</h2>
-    <form id="bets-form" class="match-form match-text">
-      <fieldset name="fields" disabled>
-        <label for="bet">Auf welches Paar möchtest du tippen?</label>
-        <select class="match-text" name="first"></select>
-        <select class="match-text" name="second"></select>
-        <button id="bets-button" class="match-text" type="submit">
-          abschicken
-        </button>
-      </fieldset>
-    </form>
-    <h2>Deine bisherigen Tipps</h2>
-    <ul id="bets-list"></ul>
+      <h2>Hier wird geraten</h2>
+      <div class="match-row">
+        <div>
+          <form id="bets-form" class="match-form match-text">
+            <fieldset name="fields" disabled>
+              <label for="bet">Auf welches Paar möchtest du tippen?</label>
+              <div>
+                <select class="match-text" name="first"></select>
+                <select class="match-text" name="second"></select>
+                <button id="bets-button" class="match-text" type="submit">
+                  abschicken
+                </button>
+              </div>
+            </fieldset>
+          </form>
+          <h2>Deine bisherigen Tipps</h2>
+          <ul id="bets-list"></ul>
+          <button id="next" class="match-text" type="button">
+            Nächste Runde starten
+          </button>
+        </div>
+        <div id="gif-container"></div>
+      </div>
+    </div>
   </body>
 </html>

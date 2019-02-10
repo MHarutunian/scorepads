@@ -67,17 +67,19 @@ function calculateScore({ terms, rounds }) {
         return;
       }
 
-      let score = scoreMap[playerId];
-      const termA = terms[playerA];
-      const termB = terms[playerB];
+      let score = 0;
+      const termA = terms[playerA].value;
+      const termB = terms[playerB].value;
 
       // if the player bets on a joker, he has to pay
       if (termA === JOKER_TERM) {
         score -= 1;
+        scoreMap[playerA] += 1;
       }
 
       if (termB === JOKER_TERM) {
         score -= 1;
+        scoreMap[playerB] += 1;
       } else if (termA === termB) {
         // correct bet - we need to check if the player was trying to find his/her partner
         if (playerA === playerId) {
@@ -96,7 +98,7 @@ function calculateScore({ terms, rounds }) {
         }
       }
 
-      scoreMap[playerId] = score;
+      scoreMap[playerId] += score;
     });
   });
 

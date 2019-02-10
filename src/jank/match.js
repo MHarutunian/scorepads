@@ -37,6 +37,21 @@ let socket;
 const playerCells = {};
 
 /**
+ * Placeholder used in cells until their actual content is revealed.
+ */
+const PLACEHOLDER = '???';
+
+/**
+ * The list of gifs to choose from when winning a match.
+ */
+const WIN_GIFS = ['yay.gif', 'goal.gif', 'party.gif'];
+
+/**
+ * The list of gifs to choose from when losing a match.
+ */
+const LOSE_GIFS = ['srs.gif'];
+
+/**
  * Adds a player to the words table.
  *
  * This will store the respective cells to the `playerCells` object.
@@ -56,7 +71,7 @@ function addPlayer(player) {
 
   const createPlaceholder = () => {
     const cell = row.insertCell();
-    cell.textContent = '???';
+    cell.textContent = PLACEHOLDER;
 
     return cell;
   };
@@ -80,6 +95,44 @@ function addPlayer(player) {
 }
 
 /**
+ * Shows the score to the active player along with an appropriate reaction gif.
+ *
+ * @param {number} score the score the player got for the current match
+ */
+function showScoreAndReaction(score) {
+  let gifs;
+  let scoreClass;
+
+  if (score > 0) {
+    scoreClass = 'score-positive';
+    gifs = WIN_GIFS;
+  } else if (score < 0) {
+    scoreClass = 'score-negative';
+    gifs = LOSE_GIFS;
+  } else {
+    scoreClass = 'score-zero';
+    gifs = LOSE_GIFS;
+  }
+
+  const gifSrc = gifs[Math.floor(Math.random() * gifs.length)];
+
+  const scoreItem = document.createElement('li');
+  scoreItem.className = 'match-text';
+  scoreItem.appendChild(document.createTextNode('Deine Punkte diese Runde: '));
+
+  const scoreSpan = document.createElement('span');
+  scoreSpan.className = `score ${scoreClass}`;
+  scoreSpan.textContent = score;
+  scoreItem.appendChild(scoreSpan);
+  document.getElementById('bets-list').appendChild(scoreItem);
+
+  const scoreGif = document.createElement('img');
+  scoreGif.className = 'score-gif';
+  scoreGif.src = `/jank/img/${gifSrc}`;
+  document.getElementById('gif-container').appendChild(scoreGif);
+}
+
+/**
  * Updates the score of each player using the specifiec score map.
  *
  * @param {Object} scoreMap the map from player IDs to each player's respective score
@@ -90,6 +143,30 @@ function updateScores(scoreMap) {
     score.value += scoreMap[playerId];
     score.cell.textContent = score.value;
   });
+}
+
+/**
+ * Resets all player cells to placeholder values, except the player name and score.
+ *
+ * This will also clear the list of bets for the active player.
+ */
+function resetCells() {
+  Object.keys(playerCells).forEach((playerId) => {
+    const { firstWord, secondWord, term } = playerCells[playerId];
+    firstWord.textContent = PLACEHOLDER;
+    secondWord.textContent = PLACEHOLDER;
+    term.textContent = PLACEHOLDER;
+  });
+
+  const betList = document.getElementById('bets-list');
+  while (betList.firstChild) {
+    betList.removeChild(betList.firstChild);
+  }
+
+  const gifContainer = document.getElementById('gif-container');
+  while (gifContainer.firstChild) {
+    gifContainer.removeChild(gifContainer.firstChild);
+  }
 }
 
 /**
@@ -125,6 +202,7 @@ function addBet([playerIdA, playerIdB]) {
   const playerB = scorepad.players.find(p => p._id === playerIdB);
 
   const betItem = document.createElement('li');
+  betItem.className = 'match-text';
   betItem.textContent = `${playerA.name} und ${playerB.name}`;
   document.getElementById('bets-list').appendChild(betItem);
 }
@@ -140,7 +218,7 @@ function onConnected(playerId) {
   const cell = playerCells[playerId];
 
   if (cell) {
-    cell.player.style.background = 'green';
+    cell.player.className = 'connected';
   }
 }
 
@@ -155,7 +233,7 @@ function onDisconnected(playerId) {
   const cell = playerCells[playerId];
 
   if (cell) {
-    cell.player.style.background = 'red';
+    cell.player.className = 'disconnected';
   }
 }
 
@@ -165,17 +243,22 @@ function onDisconnected(playerId) {
  * @param {string} state the new state
  */
 function onStateChanged(state) {
+  const nextButton = document.getElementById('next');
+
   switch (state) {
     case 'WORDS':
       wordForm.fields.disabled = false;
+      nextButton.disabled = true;
       break;
     case 'BETS':
       betsForm.fields.disabled = false;
+      nextButton.disabled = true;
       break;
     case 'PAYOUT':
     default:
       wordForm.fields.disabled = true;
       betsForm.fields.disabled = true;
+      nextButton.disabled = false;
       break;
   }
 }
@@ -217,11 +300,16 @@ function handleMessage(message) {
     case 'payout': {
       const { scoreMap, terms } = payload;
       updateScores(scoreMap);
+      showScoreAndReaction(scoreMap[activePlayerId]);
+
       Object.keys(terms).forEach((playerId) => {
         playerCells[playerId].term.textContent = terms[playerId].value;
       });
       break;
     }
+    case 'reset':
+      resetCells();
+      break;
     default:
       console.log(`UNKNOWN MESSAGE TYPE: ${type}`);
       break;
@@ -260,11 +348,16 @@ function connectToSocket() {
  * Sends a message to the server through the connected socket.
  *
  * @param {string} type the type of the message to send to the server
- * @param {string|Array|Object} data the data to send to the server
+ * @param {string|Array|Object} [payload=null] the payload to send to the server
  */
-function sendMessage(type, payload) {
+function sendMessage(type, payload = null) {
   if (socket) {
-    const data = { type, payload };
+    const data = { type };
+
+    if (payload) {
+      data.payload = payload;
+    }
+
     socket.send(JSON.stringify(data));
   }
 }
@@ -275,7 +368,7 @@ function sendMessage(type, payload) {
 function initGame() {
   scorepad.players.forEach((player) => {
     if (player._id === activePlayerId) {
-      const headerText = `Hallo ${player.name}, schön dass du dabei bist!`;
+      const headerText = `Hallo ${player.name}!`;
       document.getElementById('player-header').textContent = headerText;
     }
 
@@ -320,6 +413,20 @@ function initGame() {
   connectToSocket();
 }
 
+/**
+ * Resizes the document's body as well as the container holding all of the match's elements.
+ */
+function resizeContainer() {
+  const { documentElement, body } = document;
+  const width = window.innerWidth || documentElement.clientWidth || body.clientWidth;
+  const scale = width / 768;
+  const scalePx = value => `${Math.floor(value * scale)}px`;
+  document.body.style = `height: ${scalePx(1024)};`;
+
+  const container = document.getElementById('sheet-container');
+  container.style = `padding: ${scalePx(200)} ${scalePx(135)} 0 ${scalePx(130)}`;
+}
+
 window.onload = () => {
   activePlayerId = getParam('player');
   const scorepadId = getParam('scorepad');
@@ -332,4 +439,9 @@ window.onload = () => {
     scorepad = result;
     initGame();
   });
+
+  document.getElementById('next').onclick = () => sendMessage('new');
+
+  resizeContainer();
+  window.onresize = resizeContainer;
 };
