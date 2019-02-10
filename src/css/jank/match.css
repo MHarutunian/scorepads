@@ -12,6 +12,13 @@
   margin: 5px;
 }
 
+.header a {
+  color: black;
+  float: right;
+  font-size: small;
+  text-decoration: none;
+}
+
 .match-form fieldset {
   border: 0;
 }
