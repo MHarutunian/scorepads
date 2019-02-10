@@ -54,7 +54,7 @@ function getForScorepad(scorepad, onResult) {
  */
 function findByValue(value, onResult) {
   termModel.withCollection((collection) => {
-    collection.findOne({ value: value.toLowerCase() }, (error, result) => {
+    collection.findOne({ value }, (error, result) => {
       if (error) {
         throw error;
       }
@@ -67,13 +67,15 @@ function findByValue(value, onResult) {
 /**
  * Adds a term to the database.
  *
- * @param {string} value the value of the term to add
+ * @param {string} rawValue the raw value (mixed case, not trimmed) of the term to add
  * @param {function} onResult callback that is executed with the term document that was added
  */
-function add(value, onResult) {
+function add(rawValue, onResult) {
   termModel.withCollection((collection) => {
     collection.createIndex({ value: 1 }, { unique: true });
-    collection.insertOne({ value: value.trim().toLowerCase() }, (error, result) => {
+
+    const value = rawValue.trim().toLowerCase();
+    collection.insertOne({ value }, (error, result) => {
       if (error) {
         if (error.code === 11000) {
           findByValue(value, onResult);
