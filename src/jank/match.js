@@ -49,7 +49,7 @@ const WIN_GIFS = ['yay.gif', 'goal.gif', 'party.gif'];
 /**
  * The list of gifs to choose from when losing a match.
  */
-const LOSE_GIFS = ['srs.gif'];
+const LOSE_GIFS = ['fck.gif', 'srs.gif'];
 
 /**
  * Adds a player to the words table.
