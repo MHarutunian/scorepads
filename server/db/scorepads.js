@@ -99,28 +99,26 @@ function addMatch(id, match, onResult) {
       score: calculateMatchScore(scorepad.game, match)
     };
 
-    scorepadModel.withCollection((collection) => {
-      collection.updateOne(
-        {
-          _id: scorepad._id
-        },
-        {
-          $push: {
-            matches: {
-              ...match,
-              ...update
-            }
+    scorepadModel.getCollection().updateOne(
+      {
+        _id: scorepad._id
+      },
+      {
+        $push: {
+          matches: {
+            ...match,
+            ...update
           }
-        },
-        (error) => {
-          if (error) {
-            throw error;
-          }
-
-          onResult(update);
         }
-      );
-    });
+      },
+      (error) => {
+        if (error) {
+          throw error;
+        }
+
+        onResult(update);
+      }
+    );
   });
 }
 
@@ -140,27 +138,25 @@ function updateMatch(scorepadId, matchId, match, onResult) {
       update[`matches.$.${key}`] = match[key];
     });
 
-    scorepadModel.withCollection((collection) => {
-      collection.updateOne(
-        {
-          _id: scorepad._id,
-          'matches._id': ObjectID(matchId)
-        },
-        {
-          $set: {
-            ...update,
-            'matches.$.score': score
-          }
-        },
-        (error) => {
-          if (error) {
-            throw error;
-          }
-
-          onResult(score);
+    scorepadModel.getCollection().updateOne(
+      {
+        _id: scorepad._id,
+        'matches._id': ObjectID(matchId)
+      },
+      {
+        $set: {
+          ...update,
+          'matches.$.score': score
         }
-      );
-    });
+      },
+      (error) => {
+        if (error) {
+          throw error;
+        }
+
+        onResult(score);
+      }
+    );
   });
 }
 

@@ -53,14 +53,12 @@ function getForScorepad(scorepad, onResult) {
  * @param {function} onResult callback that is executed with the document that was found
  */
 function findByValue(value, onResult) {
-  termModel.withCollection((collection) => {
-    collection.findOne({ value }, (error, result) => {
-      if (error) {
-        throw error;
-      }
+  termModel.getCollection().findOne({ value }, (error, result) => {
+    if (error) {
+      throw error;
+    }
 
-      onResult(result);
-    });
+    onResult(result);
   });
 }
 
@@ -71,21 +69,20 @@ function findByValue(value, onResult) {
  * @param {function} onResult callback that is executed with the term document that was added
  */
 function add(rawValue, onResult) {
-  termModel.withCollection((collection) => {
-    collection.createIndex({ value: 1 }, { unique: true });
+  const collection = termModel.getCollection();
+  termModel.getCollection().createIndex({ value: 1 }, { unique: true });
 
-    const value = rawValue.trim().toLowerCase();
-    collection.insertOne({ value }, (error, result) => {
-      if (error) {
-        if (error.code === 11000) {
-          findByValue(value, onResult);
-        } else {
-          throw error;
-        }
+  const value = rawValue.trim().toLowerCase();
+  collection.insertOne({ value }, (error, result) => {
+    if (error) {
+      if (error.code === 11000) {
+        findByValue(value, onResult);
       } else {
-        onResult(result.ops[0]);
+        throw error;
       }
-    });
+    } else {
+      onResult(result.ops[0]);
+    }
   });
 }
 
