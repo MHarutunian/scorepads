@@ -218,7 +218,7 @@ function onConnected(playerId) {
   const cell = playerCells[playerId];
 
   if (cell) {
-    cell.player.style.background = 'green';
+    cell.player.className = 'connected';
   }
 }
 
@@ -233,7 +233,7 @@ function onDisconnected(playerId) {
   const cell = playerCells[playerId];
 
   if (cell) {
-    cell.player.style.background = 'red';
+    cell.player.className = 'disconnected';
   }
 }
 

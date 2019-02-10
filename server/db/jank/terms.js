@@ -25,7 +25,11 @@ function getForScorepad(scorepad, onResult) {
   if (nrOfPlayers === 4) {
     nrOfJokers = 0;
   } else if (nrOfPlayers % 2 === 1) {
-    nrOfJokers = 1;
+    if (nrOfPlayers > 6) {
+      nrOfJokers = Math.random() > 0.5 ? 3 : 1;
+    } else {
+      nrOfJokers = 1;
+    }
   } else {
     nrOfJokers = Math.random() > 0.5 ? 2 : 0;
   }

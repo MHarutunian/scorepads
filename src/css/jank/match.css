@@ -30,7 +30,7 @@
 .match-table th {
   border: 2px solid black;
   margin: 0;
-  padding: 10px 15px;
+  padding: 5px;
   text-align: center;
   text-transform: capitalize;
 }
@@ -41,6 +41,17 @@
 
 .player-picture {
   vertical-align: middle;
+  border-width: 5px;
+  border-color: gray;
+  border-style: solid;
+}
+
+.connected .player-picture {
+  border-color: green;
+}
+
+.disconnected .player-picture {
+  border-color: red;
 }
 
 .score {

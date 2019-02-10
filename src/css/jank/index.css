@@ -1,11 +1,11 @@
-.player {
+.player-select {
   margin: 20px;
 }
 
-.player select {
+.player-select select {
   margin-right: 15px;
 }
 
-.player button {
+.player-select button {
   margin-left: 15px;
 }

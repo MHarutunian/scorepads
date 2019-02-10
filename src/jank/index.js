@@ -40,7 +40,7 @@ function addPlayerSelect() {
   const selectionContainer = document.getElementById('player-selection');
 
   const container = document.createElement('div');
-  container.className = 'player';
+  container.className = 'player player-select';
 
   const select = document.createElement('select');
   container.appendChild(select);
