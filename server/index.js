@@ -37,6 +37,16 @@ appDomain.on('error', (error) => {
 // in the future we probably want to scale the images before uploading them
 app.use(bodyParser.json({ limit: '15mb' }));
 
+// disable crawling/indexing from search bots
+app.use((_, res, next) => {
+  res.header('X-Robots-Tag', 'none');
+  next();
+});
+app.get('/robots.txt', (_, res) => {
+  res.type('text/plain');
+  res.send('User-agent: *\nDisallow: /');
+});
+
 const options = { index: 'index.html' };
 app.use('/', express.static('web', options));
 
