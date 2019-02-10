@@ -73,7 +73,7 @@ function findByValue(value, onResult) {
 function add(value, onResult) {
   termModel.withCollection((collection) => {
     collection.createIndex({ value: 1 }, { unique: true });
-    collection.insertOne({ value: value.toLowerCase() }, (error, result) => {
+    collection.insertOne({ value: value.trim().toLowerCase() }, (error, result) => {
       if (error) {
         if (error.code === 11000) {
           findByValue(value, onResult);
