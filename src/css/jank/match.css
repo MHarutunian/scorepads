@@ -1,0 +1,21 @@
+.word-text {
+  font-size: large;
+}
+
+.word-table {
+  border-collapse: collapse;
+  margin-top: 20px;
+  width: 100%;
+}
+
+.word-table td,
+.word-table th {
+  border: 2px solid black;
+  margin: 0;
+  padding: 10px 15px;
+  text-align: center;
+}
+
+.player-picture {
+  vertical-align: middle;
+}

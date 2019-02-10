@@ -6,7 +6,7 @@ module.exports = {
     doppelkopfSchreiben: './src/doppelkopfSchreiben.js',
     index: './src/index.js',
     '/jank/index': './src/jank/index.js',
-    '/jank/pads': './src/jank/pads.js',
+    '/jank/match': './src/jank/match.js',
     '/jank/selection': './src/jank/selection.js',
     '/jank/terms': './src/jank/terms.js',
     players: './src/players.js'
