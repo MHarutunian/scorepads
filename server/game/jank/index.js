@@ -8,10 +8,38 @@ const { JOKER_TERM } = require('./constants');
  * @param {string} partnerId the ID of the player's partner
  */
 function hasPartnerBet(rounds, playerId, partnerId) {
+  // check if any values in rounds satisfy bets(?)
   return rounds.some(({ bets }) => {
     const bet = bets[partnerId];
     return bet.every(p => p === playerId || p === partnerId);
   });
+}
+
+/**
+ * Checks whether a player has given two equal bets
+ * @param {bets} a set of bets of a player 
+ */
+function getUniqueBets(bets) { 
+// get all bets of player and sort it to left and right arrays
+// Bin nicht sicher was ich hier statt var am besten nehmen soll
+let outp = {}; 
+let ind = 0;
+let found = false;
+bets.forEach(function(playerA, playerB) { 
+  for (let i = 0; i < ind; i++) {
+  if ((outp[i][0] === playerA && outp[i][1] === playerB) || (outp[i][0] === playerB && outp[i][1] === playerA))  { 
+    found = true;
+    break;
+  }
+}
+    if (!found) {
+      outp[ind][0] = playerA; 
+      outp[ind][1] = playerB;
+      ind++;
+    }
+    found = false;
+})
+return outp;
 }
 
 /**
@@ -27,6 +55,10 @@ function calculateScore({ terms, rounds }) {
   });
 
   rounds.forEach(({ bets }) => {
+
+    // Hier check for duplicates 
+    bets = getUniqueBets(bets); // Bin auch nicht sicher ob ich es hier so zuweisen darf ... 
+
     Object.keys(bets).forEach((playerId) => {
       const [playerA, playerB] = bets[playerId];
 

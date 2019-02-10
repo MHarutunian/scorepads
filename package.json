@@ -34,7 +34,7 @@
   "dependencies": {
     "autoprefixer": "^9.4.0",
     "body-parser": "^1.18.0",
-    "express": "^4.16.0",
+    "express": "^4.16.4",
     "express-ws": "^4.0.0",
     "mongodb": "^3.1.0",
     "nouislider": "^12.1.0",
