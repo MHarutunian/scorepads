@@ -1,45 +1,39 @@
 const { JOKER_TERM } = require('./constants');
 
 /**
- * Checks whether a player's partner has bet on the partner correctly within a match.
+ * Checks whether the provided bet is the same bet as the two provided player IDs.
  *
- * @param {Array} rounds the list of all rounds that were played in a single match
- * @param {string} playerId the ID of the player
- * @param {string} partnerId the ID of the player's partner
+ * @param {Array} bet the bet in question
+ * @param {string} playerA the first player of the bet
+ * @param {string} playerB the second player of the bet
+ * @returns {boolean} is the provided bet the same bet as `[playerA, playerB]`?
  */
-function hasPartnerBet(rounds, playerId, partnerId) {
-  // check if any values in rounds satisfy bets(?)
-  return rounds.some(({ bets }) => {
-    const bet = bets[partnerId];
-    return bet.every(p => p === playerId || p === partnerId);
-  });
+function isSameBet(bet, playerA, playerB) {
+  return bet.every(p => p === playerA || p === playerB);
 }
 
 /**
- * Checks whether a player has given two equal bets
- * @param {bets} a set of bets of a player 
+ * Gets only unique bets for each player, returned as map from player ID to unique bets.
+ *
+ * @param {Array} rounds the rounds that have been played in the game
  */
-function getUniqueBets(bets) { 
-// get all bets of player and sort it to left and right arrays
-// Bin nicht sicher was ich hier statt var am besten nehmen soll
-let outp = {}; 
-let ind = 0;
-let found = false;
-bets.forEach(function(playerA, playerB) { 
-  for (let i = 0; i < ind; i++) {
-  if ((outp[i][0] === playerA && outp[i][1] === playerB) || (outp[i][0] === playerB && outp[i][1] === playerA))  { 
-    found = true;
-    break;
-  }
-}
-    if (!found) {
-      outp[ind][0] = playerA; 
-      outp[ind][1] = playerB;
-      ind++;
-    }
-    found = false;
-})
-return outp;
+function getUniqueBets(rounds) {
+  const result = {};
+  rounds.forEach(({ bets }) => {
+    Object.keys(bets).forEach((playerId) => {
+      const bet = bets[playerId];
+      const existingBets = result[playerId] || [];
+
+      const [playerA, playerB] = bet;
+      const hasSameBet = existingBets.some(existingBet => isSameBet(existingBet, playerA, playerB));
+
+      if (!hasSameBet) {
+        result[playerId] = [...existingBets, bet];
+      }
+    });
+  });
+
+  return result;
 }
 
 /**
@@ -54,14 +48,12 @@ function calculateScore({ terms, rounds }) {
     scoreMap[playerId] = 0;
   });
 
-  rounds.forEach(({ bets }) => {
+  const betMap = getUniqueBets(rounds);
 
-    // Hier check for duplicates 
-    bets = getUniqueBets(bets); // Bin auch nicht sicher ob ich es hier so zuweisen darf ... 
+  Object.keys(betMap).forEach((playerId) => {
+    const hasPartnerBet = partner => betMap[partner].some(bet => isSameBet(bet, playerId, partner));
 
-    Object.keys(bets).forEach((playerId) => {
-      const [playerA, playerB] = bets[playerId];
-
+    betMap[playerId].forEach(([playerA, playerB]) => {
       if (playerA === playerB) {
         // invalid bet
         return;
@@ -83,11 +75,11 @@ function calculateScore({ terms, rounds }) {
       } else if (termA === termB) {
         // correct bet - we need to check if the player was trying to find his/her partner
         if (playerA === playerId) {
-          if (hasPartnerBet(rounds, playerId, playerB)) {
+          if (hasPartnerBet(playerB)) {
             score += 5;
           }
         } else if (playerB === playerId) {
-          if (hasPartnerBet(rounds, playerId, playerA)) {
+          if (hasPartnerBet(playerA)) {
             score += 5;
           }
         } else {
