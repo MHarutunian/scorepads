@@ -153,12 +153,12 @@ JanKGame.prototype.addMessageHandler = function (playerId) {
         this.currentMatch.playersReady.push(playerId);
       }
 
+      Object.values(this.sockets).forEach(s => s.send('ready', playerId));
+
       if (this.scorepad.players.length === this.currentMatch.playersReady.length) {
         Object.values(this.sockets).forEach(s => s.send('reset'));
         this.currentMatch = null;
         this.initNewMatch();
-      } else {
-        Object.values(this.sockets).forEach(s => s.send('ready', playerId));
       }
     }
   });
