@@ -58,6 +58,21 @@ function onPanic() {
 }
 
 /**
+ * Shows a toast-like notification at the top of the page and hides it after 5 seconds.
+ *
+ * @param {string} text the text to show in the toast
+ */
+function showToast(text) {
+  const toast = document.getElementById('toast');
+  toast.textContent = text;
+  toast.className = 'toast';
+
+  setTimeout(() => {
+    toast.className += ' hidden';
+  }, 5000);
+}
+
+/**
  * Adds a player to the words table.
  *
  * This will store the respective cells to the `playerCells` object.
@@ -245,15 +260,18 @@ function onStateChanged(state) {
 
   switch (state) {
     case 'WORDS':
+      showToast('Bitte überlege dir jetzt ein Wort, das du teilen möchtest.');
       wordForm.fields.disabled = false;
       nextButton.disabled = true;
       break;
     case 'BETS':
+      showToast('Bitte gib unten jetzt einen Tipp ab.');
       betsForm.fields.disabled = false;
       nextButton.disabled = true;
       break;
     case 'PAYOUT':
     default:
+      showToast('Du kannst unten nun die Punkte dieser Runde sehen.');
       wordForm.fields.disabled = true;
       betsForm.fields.disabled = true;
       nextButton.disabled = false;
