@@ -58,7 +58,7 @@
 }
 
 .pending .player-picture {
-  border-color: yellow;
+  border-color: #ffa500;
 }
 
 .disconnected .player-picture {
