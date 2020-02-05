@@ -53,8 +53,12 @@
   border-style: solid;
 }
 
-.connected .player-picture {
+.ready .player-picture {
   border-color: green;
+}
+
+.pending .player-picture {
+  border-color: yellow;
 }
 
 .disconnected .player-picture {

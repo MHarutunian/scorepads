@@ -47,7 +47,13 @@ const WIN_GIFS = ['yay.gif', 'goal.gif', 'party.gif'];
  */
 const LOSE_GIFS = ['fck.gif', 'srs.gif'];
 
-function panic() {
+/**
+ * Handler for the panic button.
+ *
+ * This will enable the `wordForm`, if it was disabled by accident.
+ */
+function onPanic() {
+  // TODO: This is just a temporary workaround until a proper bugfix is in place
   wordForm.fields.disabled = false;
 }
 
@@ -210,7 +216,7 @@ function onConnected(playerId) {
   const cell = playerCells[playerId];
 
   if (cell) {
-    cell.player.className = 'connected';
+    cell.player.className = 'ready';
   }
 }
 
@@ -264,6 +270,7 @@ function handleMessage(message) {
   const { type, payload } = JSON.parse(message.data);
 
   switch (type) {
+    case 'ready':
     case 'connect':
       onConnected(payload);
       break;
@@ -295,7 +302,9 @@ function handleMessage(message) {
       showScoreAndReaction(scoreMap[activePlayerId]);
 
       Object.keys(terms).forEach((playerId) => {
-        playerCells[playerId].term.setValue(terms[playerId].value);
+        const { player, term } = playerCells[playerId];
+        term.setValue(terms[playerId].value);
+        player.className = 'pending';
       });
       break;
     }
@@ -433,7 +442,7 @@ window.onload = () => {
   });
 
   document.getElementById('next').onclick = () => sendMessage('new');
-  document.getElementById('panic').onclick = panic;
+  document.getElementById('panic').onclick = onPanic;
 
   resizeContainer();
   window.onresize = resizeContainer;
