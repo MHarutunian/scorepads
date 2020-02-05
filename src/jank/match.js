@@ -1,3 +1,4 @@
+import Cell from './Cell';
 import getParam from '../utils/getParam';
 import getPictureSrc from '../utils/getPictureSrc';
 import PlayerSelectHelper from '../utils/PlayerSelectHelper';
@@ -37,11 +38,6 @@ let socket;
 const playerCells = {};
 
 /**
- * Placeholder used in cells until their actual content is revealed.
- */
-const PLACEHOLDER = '???';
-
-/**
  * The list of gifs to choose from when winning a match.
  */
 const WIN_GIFS = ['yay.gif', 'goal.gif', 'party.gif'];
@@ -50,6 +46,10 @@ const WIN_GIFS = ['yay.gif', 'goal.gif', 'party.gif'];
  * The list of gifs to choose from when losing a match.
  */
 const LOSE_GIFS = ['fck.gif', 'srs.gif'];
+
+function panic() {
+  wordForm.fields.disabled = false;
+}
 
 /**
  * Adds a player to the words table.
@@ -69,28 +69,17 @@ function addPlayer(player) {
   playerCell.appendChild(picture);
   playerCell.appendChild(document.createTextNode(player.name));
 
-  const createPlaceholder = () => {
-    const cell = row.insertCell();
-    cell.textContent = PLACEHOLDER;
-
-    return cell;
-  };
-
-  const firstWord = createPlaceholder();
-  const secondWord = createPlaceholder();
-  const term = createPlaceholder();
-  const scoreCell = row.insertCell();
-  scoreCell.textContent = '0';
+  const firstWordCell = new Cell(row.insertCell());
+  const secondWordCell = new Cell(row.insertCell());
+  const termCell = new Cell(row.insertCell());
+  const scoreCell = new Cell(row.insertCell(), 0);
 
   playerCells[player._id] = {
     player: playerCell,
-    firstWord,
-    secondWord,
-    term,
-    score: {
-      cell: scoreCell,
-      value: 0
-    }
+    firstWord: firstWordCell,
+    secondWord: secondWordCell,
+    term: termCell,
+    score: scoreCell
   };
 }
 
@@ -140,8 +129,7 @@ function showScoreAndReaction(score) {
 function updateScores(scoreMap) {
   Object.keys(scoreMap).forEach((playerId) => {
     const { score } = playerCells[playerId];
-    score.value += scoreMap[playerId];
-    score.cell.textContent = score.value;
+    score.setValue(score.value + scoreMap[playerId])
   });
 }
 
@@ -153,9 +141,9 @@ function updateScores(scoreMap) {
 function resetCells() {
   Object.keys(playerCells).forEach((playerId) => {
     const { firstWord, secondWord, term } = playerCells[playerId];
-    firstWord.textContent = PLACEHOLDER;
-    secondWord.textContent = PLACEHOLDER;
-    term.textContent = PLACEHOLDER;
+    firstWord.reset();
+    secondWord.reset();
+    term.reset();
   });
 
   const betList = document.getElementById('bets-list');
@@ -177,17 +165,21 @@ function resetCells() {
  * @param {string} word the word to add for the player
  */
 function addWord(round, playerId, word) {
-  if (playerId === activePlayerId) {
-    wordForm.fields.disabled = true;
-  }
-
   if (playerCells[playerId]) {
+    const isFirstRound = round === 0;
     const { firstWord, secondWord } = playerCells[playerId];
 
-    if (round === 0) {
-      firstWord.textContent = word;
+    if (playerId === activePlayerId) {
+      wordForm.fields.disabled = true;
+    } else if (!isFirstRound) {
+      const activeSecondWord = playerCells[activePlayerId].secondWord;
+      wordForm.fields.disabled = activeSecondWord.value !== null;
+    }
+
+    if (isFirstRound) {
+      firstWord.setValue(word);
     } else {
-      secondWord.textContent = word;
+      secondWord.setValue(word);
     }
   }
 }
@@ -283,7 +275,7 @@ function handleMessage(message) {
       break;
     case 'term':
       document.getElementById('term-header').textContent = payload;
-      playerCells[activePlayerId].term.textContent = payload;
+      playerCells[activePlayerId].term.setValue(payload);
       break;
     case 'word': {
       const { round, playerId, word } = payload;
@@ -303,7 +295,7 @@ function handleMessage(message) {
       showScoreAndReaction(scoreMap[activePlayerId]);
 
       Object.keys(terms).forEach((playerId) => {
-        playerCells[playerId].term.textContent = terms[playerId].value;
+        playerCells[playerId].term.setValue(terms[playerId].value);
       });
       break;
     }
@@ -441,6 +433,7 @@ window.onload = () => {
   });
 
   document.getElementById('next').onclick = () => sendMessage('new');
+  document.getElementById('panic').onclick = panic;
 
   resizeContainer();
   window.onresize = resizeContainer;
