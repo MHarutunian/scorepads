@@ -72,6 +72,12 @@ function showToast(text) {
   }, 5000);
 }
 
+function enterPendingState() {
+  Object.keys(playerCells).forEach((playerId) => {
+    playerCells[playerId].player.className = 'pending';
+  });
+}
+
 /**
  * Adds a player to the words table.
  *
@@ -266,12 +272,14 @@ function onStateChanged(state) {
       break;
     case 'BETS':
       showToast('Bitte gib unten jetzt einen Tipp ab.');
+      enterPendingState();
       betsForm.fields.disabled = false;
       nextButton.disabled = true;
       break;
     case 'PAYOUT':
     default:
       showToast('Du kannst unten nun die Punkte dieser Runde sehen.');
+      enterPendingState();
       wordForm.fields.disabled = true;
       betsForm.fields.disabled = true;
       nextButton.disabled = false;
@@ -320,9 +328,7 @@ function handleMessage(message) {
       showScoreAndReaction(scoreMap[activePlayerId]);
 
       Object.keys(terms).forEach((playerId) => {
-        const { player, term } = playerCells[playerId];
-        term.setValue(terms[playerId].value);
-        player.className = 'pending';
+        playerCells[playerId].term.setValue(terms[playerId].value);
       });
       break;
     }

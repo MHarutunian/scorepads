@@ -126,6 +126,7 @@ JanKGame.prototype.addMessageHandler = function (playerId) {
     } else if (type === 'bet') {
       currentRound.bets[playerId] = payload;
       // do not broadcast bets yet - they are private to each player until the end of the match
+      Object.values(this.sockets).forEach(s => s.send('ready', playerId));
 
       if (Object.keys(currentRound.bets).length === this.scorepad.players.length) {
         if (round === 0) {
@@ -183,7 +184,7 @@ JanKGame.prototype.sendInitialState = function (id) {
   const socket = this.sockets[id];
   this.sendState(socket);
 
-  const { state, terms, rounds, playersReady } = this.currentMatch;
+  const { state, terms, round, rounds, playersReady } = this.currentMatch;
 
   if (state === 'PAYOUT') {
     this.sendPayout(socket);
@@ -198,6 +199,14 @@ JanKGame.prototype.sendInitialState = function (id) {
 
     if (id in bets) {
       socket.send('bet', { playerId: id, bet: bets[id] });
+    }
+
+    // if we are in a betting phase, report all players
+    // that already provided a bet as `ready`
+    if (state === 'BETS' && index === round) {
+      Object.keys(bets).forEach((playerId) => {
+        socket.send('ready', playerId);
+      });
     }
   });
 
