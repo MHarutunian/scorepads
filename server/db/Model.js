@@ -1,6 +1,5 @@
 const { ObjectID } = require('mongodb');
-
-const connect = require('./connect');
+const getDb = require('./getDb');
 
 /**
  * Creates a database model for a named collection.
@@ -12,18 +11,10 @@ function Model(name) {
 }
 
 /**
- * Executes the specified callback with this model's collection from the database.
- *
- * In addition to retrieving the collection and executing the callback, this will properly close
- * the database to prevent dangling connections.
- *
- * @param {function} callback callback that is executed with the specified collection
+ * Gets this model's database collection.
  */
-Model.prototype.withCollection = function (callback) {
-  connect((db) => {
-    const collection = db.collection(this.name);
-    callback(collection);
-  });
+Model.prototype.getCollection = function () {
+  return getDb().collection(this.name);
 };
 
 /**
@@ -33,15 +24,15 @@ Model.prototype.withCollection = function (callback) {
  * @param {function} onResult the callback to execute with the documents that were found
  */
 Model.prototype.find = function (query, onResult) {
-  this.withCollection((collection) => {
-    collection.find(query).toArray((error, result) => {
+  this.getCollection()
+    .find(query)
+    .toArray((error, result) => {
       if (error) {
         throw error;
       }
 
       onResult(result);
     });
-  });
 };
 
 /**
@@ -72,17 +63,38 @@ Model.prototype.findBy = function (field, value, onResult) {
  * @param {function} onResult the callback to execute with the document that was found
  */
 Model.prototype.findOne = function (id, onResult) {
-  this.withCollection((collection) => {
-    collection.findOne({
+  this.getCollection().findOne(
+    {
       _id: ObjectID(id)
-    }, (error, doc) => {
+    },
+    (error, doc) => {
       if (error) {
         throw error;
       }
 
       onResult(doc);
+    }
+  );
+};
+
+/**
+ * Gets the requested number of random documents from this model's collection.
+ *
+ * @param {Object} query the query to preselect documents before choosing a random number
+ * @param {number} size size of the result collection, i.e. the number of random documents to get
+ * @param {function} onResult the callback to execute with the list of random results
+ */
+Model.prototype.getRandom = function (query, size, onResult) {
+  const pipeline = [{ $match: query }, { $sample: { size } }];
+  this.getCollection()
+    .aggregate(pipeline)
+    .toArray((error, result) => {
+      if (error) {
+        throw error;
+      }
+
+      onResult(result);
     });
-  });
 };
 
 /**
@@ -92,14 +104,12 @@ Model.prototype.findOne = function (id, onResult) {
  * @param {function} onResult the callback to exectue with the inserted document
  */
 Model.prototype.insertOne = function (doc, onResult) {
-  this.withCollection((collection) => {
-    collection.insertOne(doc, (error, result) => {
-      if (error) {
-        throw error;
-      }
+  this.getCollection().insertOne(doc, (error, result) => {
+    if (error) {
+      throw error;
+    }
 
-      onResult(result.ops[0]);
-    });
+    onResult(result.ops[0]);
   });
 };
 
@@ -111,19 +121,21 @@ Model.prototype.insertOne = function (doc, onResult) {
  * @param {function} onResult callback executed with a boolean (true for success, false otherwise)
  */
 Model.prototype.updateOne = function (id, update, onResult) {
-  this.withCollection((collection) => {
-    collection.updateOne({
+  this.getCollection().updateOne(
+    {
       _id: ObjectID(id)
-    }, {
+    },
+    {
       $set: update
-    }, (error, result) => {
+    },
+    (error, result) => {
       if (error) {
         throw error;
       }
 
       onResult(result.result.n > 0);
-    });
-  });
+    }
+  );
 };
 
 /**
@@ -133,17 +145,18 @@ Model.prototype.updateOne = function (id, update, onResult) {
  * @param {function} onResult callback executed with a boolean (true for success, false otherwise)
  */
 Model.prototype.deleteOne = function (id, onResult) {
-  this.withCollection((collection) => {
-    collection.deleteOne({
+  this.getCollection().deleteOne(
+    {
       _id: ObjectID(id)
-    }, (error, result) => {
+    },
+    (error, result) => {
       if (error) {
         throw error;
       }
 
       onResult(result.deletedCount > 0);
-    });
-  });
+    }
+  );
 };
 
 module.exports = Model;

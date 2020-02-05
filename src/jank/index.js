@@ -2,6 +2,7 @@ import getPictureSrc from '../utils/getPictureSrc';
 import PlayerSelectHelper from '../utils/PlayerSelectHelper';
 import sendRequest from '../utils/sendRequest';
 import '../css/common.css';
+import '../css/jank/common.css';
 import '../css/jank/index.css';
 import getScorepads from '../utils/getScorepads';
 
@@ -39,7 +40,7 @@ function addPlayerSelect() {
   const selectionContainer = document.getElementById('player-selection');
 
   const container = document.createElement('div');
-  container.className = 'player';
+  container.className = 'player player-select';
 
   const select = document.createElement('select');
   container.appendChild(select);

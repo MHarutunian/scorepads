@@ -1,21 +1,84 @@
-.word-text {
+.match-container {
+  background-image: url("/jank/img/background.png");
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.term {
+  text-transform: capitalize;
+}
+
+.header {
+  margin: 5px;
+}
+
+.header a {
+  color: black;
+  float: right;
+  font-size: small;
+  text-decoration: none;
+}
+
+.match-form fieldset {
+  border: 0;
+}
+
+.match-text {
   font-size: large;
 }
 
-.word-table {
+.match-table {
   border-collapse: collapse;
   margin-top: 20px;
   width: 100%;
 }
 
-.word-table td,
-.word-table th {
+.match-table td,
+.match-table th {
   border: 2px solid black;
   margin: 0;
-  padding: 10px 15px;
+  padding: 5px;
   text-align: center;
+  text-transform: capitalize;
+}
+
+.match-row {
+  display: flex;
 }
 
 .player-picture {
   vertical-align: middle;
+  border-width: 5px;
+  border-color: gray;
+  border-style: solid;
+}
+
+.connected .player-picture {
+  border-color: green;
+}
+
+.disconnected .player-picture {
+  border-color: red;
+}
+
+.score {
+  font-weight: bold;
+}
+
+.score-positive {
+  color: green;
+}
+
+.score-negative {
+  color: red;
+}
+
+.score-zero {
+  color: black;
+}
+
+.score-gif {
+  margin-left: 25px;
+  vertical-align: middle;
+  width: 200px;
 }

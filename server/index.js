@@ -1,12 +1,16 @@
 const express = require('express');
+
+const app = express();
+require('express-ws')(app);
+
 const bodyParser = require('body-parser');
 const domain = require('domain');
 const players = require('./api/players');
 const scorepads = require('./api/scorepads');
 const terms = require('./api/jank/terms');
 const config = require('./config/config');
+const scorepadsWs = require('./ws/scorepads');
 
-const app = express();
 const appDomain = domain.create();
 
 if (config.dev) {
@@ -33,11 +37,23 @@ appDomain.on('error', (error) => {
 // in the future we probably want to scale the images before uploading them
 app.use(bodyParser.json({ limit: '15mb' }));
 
+// disable crawling/indexing from search bots
+app.use((_, res, next) => {
+  res.header('X-Robots-Tag', 'none');
+  next();
+});
+app.get('/robots.txt', (_, res) => {
+  res.type('text/plain');
+  res.send('User-agent: *\nDisallow: /');
+});
+
 const options = { index: 'index.html' };
 app.use('/', express.static('web', options));
 
 app.use('/api/players', players);
 app.use('/api/scorepads', scorepads);
 app.use('/api/jank/terms', terms);
+
+app.use('/ws/scorepads', scorepadsWs);
 
 app.listen(80);

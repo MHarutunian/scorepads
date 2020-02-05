@@ -1,5 +1,6 @@
 import sendRequest from '../utils/sendRequest';
 import '../css/common.css';
+import '../css/jank/common.css';
 import '../css/jank/terms.css';
 
 /**

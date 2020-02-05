@@ -1,3 +1,4 @@
+const jank = require('./jank');
 const doppelkopf = require('./doppelkopf');
 
 /**
@@ -32,5 +33,6 @@ function calculateMatchScore(game, match) {
 }
 
 registerGame('Doppelkopf', doppelkopf);
+registerGame('JanK', jank);
 
 exports.calculateMatchScore = calculateMatchScore;

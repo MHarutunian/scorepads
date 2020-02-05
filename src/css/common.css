@@ -1,6 +1,7 @@
 .nav-header {
   display: flex;
   margin: 10px 0;
+  align-items: center;
 }
 
 .nav-header a {
@@ -8,6 +9,10 @@
   padding: 10px;
   background-color: #f4bc42;
   border-radius: 15px;
+}
+
+.nav-img {
+  width: 100px;
 }
 
 .player {
@@ -23,9 +28,17 @@
 }
 
 .scorepad {
-  width: 90%;
-  display: flex;
   align-items: center;
-  justify-content: space-evenly;
-  margin: 15px 0;
+  border-color: gray;
+  border-style: solid;
+  border-width: 2px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  margin: 5px;
+  padding: 0 5px;
+}
+
+.scorepad .player {
+  margin: 5px;
 }
