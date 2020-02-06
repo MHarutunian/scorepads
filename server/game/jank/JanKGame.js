@@ -25,14 +25,12 @@ JanKGame.prototype.addConnection = function (playerId, socket) {
   socket.onClose(() => {
     delete this.sockets[playerId];
 
-    Object.values(this.sockets).forEach((otherSocket) => {
-      otherSocket.disconnect(playerId);
-    });
+    Object.values(this.sockets).forEach(s => s.disconnect(playerId));
   });
 
-  Object.keys(this.sockets).forEach((otherPlayerId) => {
-    this.sockets[otherPlayerId].connect(playerId);
-    socket.connect(otherPlayerId);
+  Object.keys(this.sockets).forEach((id) => {
+    this.sockets[id].connect(playerId);
+    socket.connect(id);
   });
 
   this.sockets[playerId] = socket;
@@ -64,7 +62,8 @@ JanKGame.prototype.initNewMatch = function () {
         words: {},
         bets: {}
       }
-    ]
+    ],
+    playersReady: []
   };
 
   dbTerms.getForScorepad(this.scorepad, (terms) => {
@@ -115,8 +114,8 @@ JanKGame.prototype.addMessageHandler = function (playerId) {
 
     if (type === 'word') {
       // broadcast word to other players
-      Object.values(this.sockets).forEach((otherSocket) => {
-        otherSocket.send('word', { playerId, round, word: payload });
+      Object.values(this.sockets).forEach((s) => {
+        s.send('word', { playerId, round, word: payload });
       });
 
       currentRound.words[playerId] = payload;
@@ -127,6 +126,7 @@ JanKGame.prototype.addMessageHandler = function (playerId) {
     } else if (type === 'bet') {
       currentRound.bets[playerId] = payload;
       // do not broadcast bets yet - they are private to each player until the end of the match
+      Object.values(this.sockets).forEach(s => s.send('ready', playerId));
 
       if (Object.keys(currentRound.bets).length === this.scorepad.players.length) {
         if (round === 0) {
@@ -150,9 +150,17 @@ JanKGame.prototype.addMessageHandler = function (playerId) {
         this.broadcastState();
       }
     } else if (type === 'new') {
-      Object.values(this.sockets).forEach(otherSocket => otherSocket.send('reset'));
-      this.currentMatch = null;
-      this.initNewMatch();
+      if (!this.currentMatch.playersReady.includes(playerId)) {
+        this.currentMatch.playersReady.push(playerId);
+      }
+
+      Object.values(this.sockets).forEach(s => s.send('ready', playerId));
+
+      if (this.scorepad.players.length === this.currentMatch.playersReady.length) {
+        Object.values(this.sockets).forEach(s => s.send('reset'));
+        this.currentMatch = null;
+        this.initNewMatch();
+      }
     }
   });
 };
@@ -176,7 +184,7 @@ JanKGame.prototype.sendInitialState = function (id) {
   const socket = this.sockets[id];
   this.sendState(socket);
 
-  const { state, terms, rounds } = this.currentMatch;
+  const { state, terms, round, rounds, playersReady } = this.currentMatch;
 
   if (state === 'PAYOUT') {
     this.sendPayout(socket);
@@ -192,6 +200,18 @@ JanKGame.prototype.sendInitialState = function (id) {
     if (id in bets) {
       socket.send('bet', { playerId: id, bet: bets[id] });
     }
+
+    // if we are in a betting phase, report all players
+    // that already provided a bet as `ready`
+    if (state === 'BETS' && index === round) {
+      Object.keys(bets).forEach((playerId) => {
+        socket.send('ready', playerId);
+      });
+    }
+  });
+
+  playersReady.forEach(playerId => {
+    socket.send('ready', playerId);
   });
 };
 

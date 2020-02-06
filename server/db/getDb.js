@@ -2,7 +2,10 @@ const { MongoClient } = require('mongodb');
 const config = require('../config/config');
 
 const { host, port, path } = config.mongodb;
-const options = { useNewUrlParser: true };
+const options = {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+};
 
 let db = null;
 

@@ -53,8 +53,12 @@
   border-style: solid;
 }
 
-.connected .player-picture {
+.ready .player-picture {
   border-color: green;
+}
+
+.pending .player-picture {
+  border-color: #ffa500;
 }
 
 .disconnected .player-picture {
@@ -81,4 +85,25 @@
   margin-left: 25px;
   vertical-align: middle;
   width: 200px;
+}
+
+.toast {
+  position: fixed;
+  top: 0;
+  left: 25%;
+  right: 25%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #999;
+  padding: 30px;
+  font-size: large;
+  font-weight: bold;
+  border-bottom-left-radius: 25px;
+  border-bottom-right-radius: 25px;
+  transition: top 2s ease-out;
+}
+
+.toast.hidden {
+  top: -200px;
 }
