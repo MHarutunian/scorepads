@@ -16,7 +16,7 @@ const scorepadModel = new Model('scorepads');
 function initScorepad(scorepad, players) {
   return {
     ...scorepad,
-    players: scorepad.players.map(id => players.find(player => player._id.equals(id))),
+    players: scorepad.players.map((id) => players.find((player) => player._id.equals(id))),
     created_at: scorepad._id.getTimestamp()
   };
 }
@@ -30,7 +30,7 @@ function initScorepad(scorepad, players) {
 function get(query, onResult) {
   scorepadModel.find(query, (scorepads) => {
     dbPlayers.get((players) => {
-      onResult(scorepads.map(scorepad => initScorepad(scorepad, players)));
+      onResult(scorepads.map((scorepad) => initScorepad(scorepad, players)));
     });
   });
 }
@@ -46,7 +46,7 @@ function get(query, onResult) {
 function findById(id, onResult) {
   scorepadModel.findOne(id, (scorepad) => {
     if (scorepad) {
-      const playerIds = scorepad.players.map(playerId => ObjectID(playerId));
+      const playerIds = scorepad.players.map((playerId) => ObjectID(playerId));
 
       dbPlayers.findBy('_id', playerIds, (players) => {
         onResult(initScorepad(scorepad, players));

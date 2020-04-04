@@ -23,7 +23,7 @@ function getScoreFromPoints(points) {
  * @param {Object} match the match to calculate the score for
  */
 function calculateScore(match) {
-  const isSolo = match.winners.some(winnerId => winnerId === 'SOLO');
+  const isSolo = match.winners.some((winnerId) => winnerId === 'SOLO');
   let score = 0;
   // Initial score is 1 if playing "gegen die Alten" and the game is not a solo
   if (!isSolo) {

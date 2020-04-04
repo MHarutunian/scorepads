@@ -25,7 +25,7 @@ JanKGame.prototype.addConnection = function (playerId, socket) {
   socket.onClose(() => {
     delete this.sockets[playerId];
 
-    Object.values(this.sockets).forEach(s => s.disconnect(playerId));
+    Object.values(this.sockets).forEach((s) => s.disconnect(playerId));
   });
 
   Object.keys(this.sockets).forEach((id) => {
@@ -71,7 +71,7 @@ JanKGame.prototype.initNewMatch = function () {
     const getRandomPlayer = () => {
       const index = Math.floor(Math.random() * Math.floor(players.length));
       const player = players[index];
-      players = players.filter(p => p !== player);
+      players = players.filter((p) => p !== player);
       return player;
     };
     const addTerm = (player, term) => {
@@ -88,7 +88,7 @@ JanKGame.prototype.initNewMatch = function () {
     });
 
     // these players didn't get a term -> they are jokers
-    players.forEach(p => addTerm(p, { value: JOKER_TERM }));
+    players.forEach((p) => addTerm(p, { value: JOKER_TERM }));
 
     this.currentMatch.state = 'WORDS';
     this.broadcastState();
@@ -126,7 +126,7 @@ JanKGame.prototype.addMessageHandler = function (playerId) {
     } else if (type === 'bet') {
       currentRound.bets[playerId] = payload;
       // do not broadcast bets yet - they are private to each player until the end of the match
-      Object.values(this.sockets).forEach(s => s.send('ready', playerId));
+      Object.values(this.sockets).forEach((s) => s.send('ready', playerId));
 
       if (Object.keys(currentRound.bets).length === this.scorepad.players.length) {
         if (round === 0) {
@@ -154,10 +154,10 @@ JanKGame.prototype.addMessageHandler = function (playerId) {
         this.currentMatch.playersReady.push(playerId);
       }
 
-      Object.values(this.sockets).forEach(s => s.send('ready', playerId));
+      Object.values(this.sockets).forEach((s) => s.send('ready', playerId));
 
       if (this.scorepad.players.length === this.currentMatch.playersReady.length) {
-        Object.values(this.sockets).forEach(s => s.send('reset'));
+        Object.values(this.sockets).forEach((s) => s.send('reset'));
         this.currentMatch = null;
         this.initNewMatch();
       }
@@ -184,7 +184,13 @@ JanKGame.prototype.sendInitialState = function (id) {
   const socket = this.sockets[id];
   this.sendState(socket);
 
-  const { state, terms, round, rounds, playersReady } = this.currentMatch;
+  const {
+    state,
+    terms,
+    round,
+    rounds,
+    playersReady
+  } = this.currentMatch;
 
   if (state === 'PAYOUT') {
     this.sendPayout(socket);
@@ -210,7 +216,7 @@ JanKGame.prototype.sendInitialState = function (id) {
     }
   });
 
-  playersReady.forEach(playerId => {
+  playersReady.forEach((playerId) => {
     socket.send('ready', playerId);
   });
 };
@@ -219,7 +225,7 @@ JanKGame.prototype.sendInitialState = function (id) {
  * Broadcasts the current match's state to all connected players.
  */
 JanKGame.prototype.broadcastState = function () {
-  Object.values(this.sockets).forEach(socket => this.sendState(socket));
+  Object.values(this.sockets).forEach((socket) => this.sendState(socket));
 };
 
 /**
@@ -235,7 +241,7 @@ JanKGame.prototype.sendState = function (socket) {
  * Broadcasts the payout of the current match to all connected players.
  */
 JanKGame.prototype.broadcastPayout = function () {
-  Object.values(this.sockets).forEach(socket => this.sendPayout(socket));
+  Object.values(this.sockets).forEach((socket) => this.sendPayout(socket));
 };
 
 /**
@@ -252,7 +258,7 @@ JanKGame.prototype.sendPayout = function (socket) {
  * Checks whether the game is still active, i.e. if any of the players is still connected.
  */
 JanKGame.prototype.isActive = function () {
-  return Object.values(this.sockets).some(socket => socket.isConnected());
+  return Object.values(this.sockets).some((socket) => socket.isConnected());
 };
 
 module.exports = JanKGame;

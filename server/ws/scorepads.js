@@ -14,7 +14,7 @@ router.ws('/:scorepadId', (ws, req) => {
   const wsWrapper = new WsWrapper(ws);
   scorepads.findById(scorepadId, (scorepad) => {
     if (scorepad) {
-      const player = scorepad.players.find(p => p._id.equals(playerId));
+      const player = scorepad.players.find((p) => p._id.equals(playerId));
 
       if (player) {
         const game = games[scorepadId] || new JanKGame(scorepad);

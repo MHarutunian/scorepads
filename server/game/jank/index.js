@@ -6,10 +6,10 @@ const { JOKER_TERM } = require('./constants');
  * @param {Array} bet the bet in question
  * @param {string} playerA the first player of the bet
  * @param {string} playerB the second player of the bet
- * @returns {boolean} is the provided bet the same bet as `[playerA, playerB]`?
+ * @returns {function} function that checks whether a bet is the same bet as `[playerA, playerB]`
  */
-function isSameBet(bet, playerA, playerB) {
-  return bet.every(p => p === playerA || p === playerB);
+function isSameBet(playerA, playerB) {
+  return (bet) => bet.every((p) => p === playerA || p === playerB);
 }
 
 /**
@@ -25,7 +25,7 @@ function getUniqueBets(rounds) {
       const existingBets = result[playerId] || [];
 
       const [playerA, playerB] = bet;
-      const hasSameBet = existingBets.some(existingBet => isSameBet(existingBet, playerA, playerB));
+      const hasSameBet = existingBets.some(isSameBet(playerA, playerB));
 
       if (!hasSameBet) {
         result[playerId] = [...existingBets, bet];
@@ -51,7 +51,7 @@ function calculateScore({ terms, rounds }) {
   const betMap = getUniqueBets(rounds);
 
   Object.keys(betMap).forEach((playerId) => {
-    const hasPartnerBet = partner => betMap[partner].some(bet => isSameBet(bet, playerId, partner));
+    const hasPartnerBet = (partner) => betMap[partner].some(isSameBet(playerId, partner));
 
     betMap[playerId].forEach(([playerA, playerB]) => {
       if (playerA === playerB) {

@@ -15,7 +15,7 @@ function WsWrapper(socket) {
  * @param {function} callback the callback to execute when the socket receives a message
  */
 WsWrapper.prototype.onMessage = function (callback) {
-  this.socket.on('message', data => callback(JSON.parse(data)));
+  this.socket.on('message', (data) => callback(JSON.parse(data)));
 };
 
 /**

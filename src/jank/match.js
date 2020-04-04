@@ -156,7 +156,7 @@ function showScoreAndReaction(score) {
 function updateScores(scoreMap) {
   Object.keys(scoreMap).forEach((playerId) => {
     const { score } = playerCells[playerId];
-    score.setValue(score.value + scoreMap[playerId])
+    score.setValue(score.value + scoreMap[playerId]);
   });
 }
 
@@ -217,8 +217,8 @@ function addWord(round, playerId, word) {
  * @param {Array} param0 the bet to add (i.e. the IDs of the paired players)
  */
 function addBet([playerIdA, playerIdB]) {
-  const playerA = scorepad.players.find(p => p._id === playerIdA);
-  const playerB = scorepad.players.find(p => p._id === playerIdB);
+  const playerA = scorepad.players.find((p) => p._id === playerIdA);
+  const playerB = scorepad.players.find((p) => p._id === playerIdB);
 
   const betItem = document.createElement('li');
   betItem.className = 'match-text';
@@ -445,7 +445,7 @@ function resizeContainer() {
   const { documentElement, body } = document;
   const width = window.innerWidth || documentElement.clientWidth || body.clientWidth;
   const scale = width / 768;
-  const scalePx = value => `${Math.floor(value * scale)}px`;
+  const scalePx = (value) => `${Math.floor(value * scale)}px`;
   document.body.style = `height: ${scalePx(1024)};`;
 
   const container = document.getElementById('sheet-container');

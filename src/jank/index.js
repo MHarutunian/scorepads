@@ -54,7 +54,7 @@ function addPlayerSelect() {
   container.appendChild(name);
 
   select.onchange = () => {
-    const player = players.find(p => p._id === select.value);
+    const player = players.find((p) => p._id === select.value);
 
     if (player) {
       picture.src = getPictureSrc(player.picture);
@@ -98,7 +98,7 @@ window.onload = () => {
   beginButton.onclick = () => {
     sendRequest('POST', '/api/scorepads', redirectToPlayerSelection, {
       game: 'JanK',
-      players: playerSelectHelper.selects.map(s => s.value)
+      players: playerSelectHelper.selects.map((s) => s.value)
     });
   };
 
