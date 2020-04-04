@@ -51,7 +51,7 @@ PlayerSelectHelper.prototype.add = function (select) {
  * @param {HTMLSelectElement[]} selects the elements to add
  */
 PlayerSelectHelper.prototype.addAll = function (selects) {
-  selects.forEach(select => this.add(select));
+  selects.forEach((select) => this.add(select));
 };
 
 /**
@@ -62,7 +62,7 @@ PlayerSelectHelper.prototype.addAll = function (selects) {
  * @param {HTMLSelectElement} select the element to remove
  */
 PlayerSelectHelper.prototype.remove = function (select) {
-  this.selects = this.selects.filter(s => s !== select);
+  this.selects = this.selects.filter((s) => s !== select);
   this.checkOptions();
 };
 
@@ -73,7 +73,7 @@ PlayerSelectHelper.prototype.remove = function (select) {
  * @returns {boolean} should the provided option be disabled?
  */
 PlayerSelectHelper.prototype.isOptionDisabled = function (option) {
-  return this.selects.some(s => s.value === option.value);
+  return this.selects.some((s) => s.value === option.value);
 };
 
 /**
@@ -98,7 +98,7 @@ PlayerSelectHelper.prototype.checkOptions = function () {
       }
     });
 
-    this.actionButton.disabled = this.selects.some(s => !s.value);
+    this.actionButton.disabled = this.selects.some((s) => !s.value);
   });
 };
 

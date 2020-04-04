@@ -21,8 +21,8 @@ const sliderOptions = {
     max: 120
   },
   format: {
-    to: value => value,
-    from: value => value
+    to: (value) => value,
+    from: (value) => value
   },
   pips: {
     mode: 'steps',
@@ -165,7 +165,7 @@ function editMatch(match) {
 
   winners.forEach((winner, i) => {
     const winnerSelect = form.elements[`winner${i + 1}`];
-    const winnerOption = Array.from(winnerSelect.options).find(option => option.value === winner);
+    const winnerOption = Array.from(winnerSelect.options).find((option) => option.value === winner);
 
     if (winnerOption) {
       winnerSelect.selectedIndex = winnerOption.index;
@@ -174,7 +174,7 @@ function editMatch(match) {
 
   const bidCheckboxes = Array.from(form.elements.bid);
   bids.forEach((bid) => {
-    const checkbox = bidCheckboxes.find(cb => cb.value === bid);
+    const checkbox = bidCheckboxes.find((cb) => cb.value === bid);
     checkbox.checked = true;
   });
 
@@ -213,7 +213,7 @@ function addMatch(match) {
   const row = table.insertRow(rowIndex);
   row.id = id;
 
-  const isSolo = winners.some(winnerId => winnerId === PLAYER_SOLO);
+  const isSolo = winners.some((winnerId) => winnerId === PLAYER_SOLO);
   let winnerScore = isSolo ? score * 3 : score;
   let loserScore = isSolo ? -score : 0;
 
@@ -228,8 +228,8 @@ function addMatch(match) {
     const playerCell = row.insertCell();
     playerCell.className = 'playerCell';
     const player = players[i];
-    const isWinner = winners.some(winnerId => winnerId === player._id);
-    const existingItem = player.score.find(scoreItem => scoreItem.matchId === id);
+    const isWinner = winners.some((winnerId) => winnerId === player._id);
+    const existingItem = player.score.find((scoreItem) => scoreItem.matchId === id);
     const actualScore = isWinner ? winnerScore : loserScore;
 
     if (existingItem) {
@@ -268,7 +268,7 @@ function addMatch(match) {
 
   winners.forEach((winnerId) => {
     if (winnerId !== PLAYER_SOLO) {
-      const winner = players.find(player => player._id === winnerId);
+      const winner = players.find((player) => player._id === winnerId);
       const winnerName = winner ? winner.name : 'Unbekannt';
 
       if (winnerCell.textContent) {
@@ -343,12 +343,12 @@ function saveMatch() {
     winner1, winner2, team, bid, 'special-points': specialPoints
   } = form.elements;
 
-  const bids = Array.from(bid).filter(checkbox => checkbox.checked);
+  const bids = Array.from(bid).filter((checkbox) => checkbox.checked);
 
   const match = {
     winners: [winner1.value, winner2.value],
     team: team.value,
-    bids: bids.map(checkbox => checkbox.value),
+    bids: bids.map((checkbox) => checkbox.value),
     points: pointsSlider.noUiSlider.get(),
     bidding: biddingSlider.noUiSlider.get(),
     specialPoints: parseInt(specialPoints.value, 10)
@@ -416,7 +416,7 @@ window.onload = () => {
 
   sendRequest('GET', `/api/scorepads/${scorepadId}`, (scorepad) => {
     const tableHeader = document.getElementById('scorepad-header');
-    players = scorepad.players.map(player => ({
+    players = scorepad.players.map((player) => ({
       ...player,
       score: []
     }));

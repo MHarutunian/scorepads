@@ -19,7 +19,7 @@ const termIds = [];
  * @param {Object} term the term to add to the list of terms
  */
 function addTerm(term) {
-  if (termIds.find(id => id === term._id)) {
+  if (termIds.find((id) => id === term._id)) {
     // duplicate term was added already, ignore this one
     return;
   }
